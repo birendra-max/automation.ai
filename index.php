@@ -1,3 +1,7 @@
+<script>
+    document.title = 'Dashboard | AI'
+</script>
+
 <?php
 include 'inclu/hd.php';
 ?>
@@ -33,7 +37,7 @@ include 'inclu/hd.php';
                 <div class="mt-5 sm:mt-8 sm:flex sm:justify-center">
                     <div class="rounded-md shadow"><a
                             class="flex w-full items-center justify-center rounded-md border border-transparent bg-blue-600 px-8 py-3 text-base font-medium text-white hover:bg-blue-700 md:py-4 md:px-10 md:text-lg"
-                            href="#">Get started for free 🚀
+                            href="mailai.php">Get started 🚀
                         </a>
                     </div>
                 </div>
