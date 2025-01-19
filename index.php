@@ -1,100 +1,48 @@
-<!DOCTYPE html>
-<html lang="en">
+<?php
+include 'inclu/hd.php';
+?>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Email Autimation | AI</title>
-    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.js" defer></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.4.2/zxcvbn.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.2/dist/tailwind.min.css" rel="stylesheet">
-</head>
-
-<body class="font-sans antialiased bg-gray-900">
-
-    <?php
-        include 'inclu/hd.php';
-    ?>
-
-    <section>
-        <div class="max-w-3xl mx-auto text-center mt-16">
-            <h1 class="text-4xl font-bold text-gray-900 leading-tight mb-2 border-t-4 border-b-4 border-purple-600 py-4">
-                Fancy Heading
-            </h1>
-            <p class="text-lg text-gray-800 mb-8">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-        </div>
-        <br>
-        <br>
-        <br>
-
-        <div id="signUpform" class="fixed inset-0 z-50 grid place-items-center max-h-screen backdrop-blur-sm w-full h-full justify-center items-center text-white bg-black bg-cover" style="background-image: url('https://pagedone.io/asset/uploads/1691055810.png');">
-            <div class="bg-gray-100 text-black rounded-3xl shadow-xl w-full max-w-9xl overflow-hidden">
-                <div class="md:flex w-full">
-                    <div class="hidden md:block w-1/2 bg-indigo-500 py-10 px-10">
-                        <!-- You can replace the SVG below with your own custom SVG -->
-                        <img src="https://media.licdn.com/dms/image/v2/D4E12AQHr8PiBfk7Cww/article-cover_image-shrink_600_2000/article-cover_image-shrink_600_2000/0/1699752616757?e=2147483647&v=beta&t=fg_3LUbLoL3qMHP1lFYOLveBVdYNvqV_ejWqXa0Cpk0" alt="" class="w-full h-96">
+<section>
+    <div class="flex justify-center items-center">
+        <div class="mx-auto mt-10 flex justify-center px-4 sm:mt-12 sm:px-6 md:mt-16 lg:mt-20 lg:px-8">
+            <div class="text-center ">
+                <h1
+                    class="text-4xl font-extrabold tracking-tight text-gray-900 dark:text-slate-200 sm:text-5xl md:text-6xl">
+                    <span class="block xl:inline"><span class="mb-1 block text-black">Create amazing</span>
+                        <span class="bg-gradient-to-r from-indigo-400 to-pink-600 bg-clip-text text-transparent">
+                            podcast show notes
+                        </span>
+                    </span>
+                    <div class="mt-2">10X faster
+                        <span class="relative mt-3 whitespace-nowrap text-blue-600"><svg aria-hidden="true" viewBox="0 0 418 42"
+                                class="absolute top-3/4 left-0 right-0 m-auto h-[0.58em] w-fit fill-pink-400/50"
+                                preserveAspectRatio="none">
+                                <path
+                                    d="M203.371.916c-26.013-2.078-76.686 1.963-124.73 9.946L67.3 12.749C35.421 18.062 18.2 21.766 6.004 25.934 1.244 27.561.828 27.778.874 28.61c.07 1.214.828 1.121 9.595-1.176 9.072-2.377 17.15-3.92 39.246-7.496C123.565 7.986 157.869 4.492 195.942 5.046c7.461.108 19.25 1.696 19.17 2.582-.107 1.183-7.874 4.31-25.75 10.366-21.992 7.45-35.43 12.534-36.701 13.884-2.173 2.308-.202 4.407 4.442 4.734 2.654.187 3.263.157 15.593-.78 35.401-2.686 57.944-3.488 88.365-3.143 46.327.526 75.721 2.23 130.788 7.584 19.787 1.924 20.814 1.98 24.557 1.332l.066-.011c1.201-.203 1.53-1.825.399-2.335-2.911-1.31-4.893-1.604-22.048-3.261-57.509-5.556-87.871-7.36-132.059-7.842-23.239-.254-33.617-.116-50.627.674-11.629.54-42.371 2.494-46.696 2.967-2.359.259 8.133-3.625 26.504-9.81 23.239-7.825 27.934-10.149 28.304-14.005.417-4.348-3.529-6-16.878-7.066Z">
+                                </path>
+                            </svg>
+                            <span class="relative">with AI tools.</span>
+                        </span>
                     </div>
-                    <div class="w-full md:w-1/2 py-10 px-5 md:px-10">
-                        <div class="text-center mb-10">
-                            <h1 class="font-bold text-3xl text-gray-900">Email Automation</h1>
-                            <p>Upload your file to send mail automatically</p>
-                        </div>
-                        <form id="signupform">
-
-                            <div class="flex flex-col flex-grow mb-3 mx-4 max-w-md">
-                                <div x-data="{ files: null }" id="FileUpload"
-                                    class="block w-full py-2 px-3 relative bg-white appearance-none border-2 border-gray-300 border-solid rounded-md hover:shadow-outline-gray">
-                                    <input type="file" multiple
-                                        class="absolute inset-0 z-50 m-0 p-0 w-full h-full outline-none opacity-0"
-                                        x-on:change="files = $event.target.files; console.log($event.target.files);"
-                                        x-on:dragover="$el.classList.add('active')" x-on:dragleave="$el.classList.remove('active')" x-on:drop="$el.classList.remove('active')">
-                                    <template x-if="files !== null">
-                                        <div class="flex flex-col space-y-1">
-                                            <template x-for="(_,index) in Array.from({ length: files.length })">
-                                                <div class="flex flex-row items-center space-x-2">
-                                                    <template
-                                                        x-if="files[index].type.includes('audio/')"><i class="far fa-file-audio fa-fw"></i></template>
-                                                    <template
-                                                        x-if="files[index].type.includes('application/')"><i class="far fa-file-alt fa-fw"></i></template>
-                                                    <template
-                                                        x-if="files[index].type.includes('image/')"><i class="far fa-file-image fa-fw"></i></template>
-                                                    <template
-                                                        x-if="files[index].type.includes('video/')"><i class="far fa-file-video fa-fw"></i></template>
-                                                    <span class="font-medium text-gray-900" x-text="files[index].name">Uploading</span>
-                                                    <span class="text-xs self-end text-gray-500" x-text="filesize(files[index].size)">...</span>
-                                                </div>
-                                            </template>
-                                        </div>
-                                    </template>
-                                    <template x-if="files === null">
-                                        <div class="flex flex-col space-y-2 items-center justify-center">
-                                            <i class="fas fa-cloud-upload-alt fa-3x text-currentColor"></i>
-                                            <p class="text-gray-700">Drag your files here or click in this area.</p>
-                                            <a href="javascript:void(0)"
-                                                class="flex items-center mx-auto py-2 px-4 text-white text-center font-medium border border-transparent rounded-md outline-none bg-red-700">Select
-                                                a file</a>
-                                        </div>
-                                    </template>
-                                </div>
-                            </div>
-
-                            <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js"></script>
-                            <script src="https://cdn.filesizejs.com/filesize.min.js"></script>
-                            <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.1/css/all.min.css" rel="stylesheet" />
-
-                            <div class="flex -mx-3">
-                                <div class="w-full px-3 mb-5">
-                                    <button type="submit" class="block w-full max-w-xs mx-auto bg-indigo-500 hover:bg-indigo-700 focus:bg-indigo-700 text-white rounded-lg px-3 py-2 font-semibold">Send</button>
-                                    <button type="reset" class="mt-2 block w-full max-w-xs mx-auto bg-red-500 hover:bg-red-700 focus:bg-red-700 text-white rounded-lg px-3 py-2 font-semibold">Reset</button>
-                                </div>
-                            </div>
-                        </form>
+                </h1>
+                <p class="mx-auto mt-3 max-w-xl text-lg text-gray-500 dark:text-slate-400 sm:mt-5 md:mt-5">
+                    example is the AI Content Generator
+                    that helps you and your team break through creative blocks to create amazing, original content 10X
+                    faster.
+                </p>
+                <div class="mt-5 sm:mt-8 sm:flex sm:justify-center">
+                    <div class="rounded-md shadow"><a
+                            class="flex w-full items-center justify-center rounded-md border border-transparent bg-blue-600 px-8 py-3 text-base font-medium text-white hover:bg-blue-700 md:py-4 md:px-10 md:text-lg"
+                            href="#">Get started for free 🚀
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-</body>
 
-</html>
+<?php
+include 'inclu/footer.php';
+?>
