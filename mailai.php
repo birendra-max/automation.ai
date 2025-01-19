@@ -9,7 +9,7 @@ include 'inclu/hd.php';
 <section class="mt-12">
     <div class="bg-gray-100 text-black rounded-3xl shadow-xl w-full overflow-hidden mx-auto max-w-5xl">
         <div class="w-full flex justify-center items-center">
-            <form class="w-full py-10 px-5 md:px-10" id="signupform">
+            <form class="w-full py-10 px-5 md:px-10" id="emailform" enctype="multipart/form-data">
                 <div class="text-center mb-10">
                     <h1 class="font-bold text-3xl text-gray-900">Email Automation</h1>
                     <p class="text-gray-600">Upload your Excel file to send emails. Send a batch of emails with a single click.</p>
@@ -19,7 +19,7 @@ include 'inclu/hd.php';
                 <div class="flex flex-col mb-6 mx-8">
                     <div x-data="{ files: null }" id="FileUpload"
                         class="block w-full py-6 px-6 relative bg-white border-2 border-gray-300 rounded-md hover:shadow-lg focus:ring-2 focus:ring-indigo-500 transition-all duration-300">
-                        <input type="file" accept=".xlsx,.xls"
+                        <input type="file" accept=".xlsx,.xls" name="emailfile"
                             class="absolute inset-0 m-0 p-0 w-full h-full opacity-0 cursor-pointer"
                             x-on:change="files = $event.target.files; console.log($event.target.files);"
                             x-on:dragover="$el.classList.add('active')" x-on:dragleave="$el.classList.remove('active')" x-on:drop="$el.classList.remove('active')" required>
@@ -55,7 +55,7 @@ include 'inclu/hd.php';
 
                 <!-- Submit and Reset Buttons -->
                 <div class="flex flex-col md:flex-row mt-6 gap-4 w-full">
-                    <button type="submit" name="signUpForm" value="i_want_to_sign_up"
+                    <button type="submit" id="submitbut"
                         class="w-full md:w-auto bg-indigo-600 text-white rounded-lg px-6 py-3 md:ml-8 font-semibold hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 transition-all duration-300">
                         Send Mail
                     </button>
@@ -71,7 +71,41 @@ include 'inclu/hd.php';
 </section>
 
 <script>
+    $(document).ready(function() {
+        $('#emailform').submit(function(e) {
+            e.preventDefault();
+            $("#submitbut").addClass('hidden');
+            $("#spinner").removeClass("hidden");
 
+            let form = $(this)[0];
+            let formData = new FormData(form);
+
+            for (let pair of formData.entries()) {
+                console.log(pair[0] + ": " + pair[1]);
+            }
+
+            $.ajax({
+                url: "inclu/mailback.php",
+                type: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(resp) {
+                    const response = JSON.parse(resp);
+                    if (response.message === 'File uploaded successfully') {
+                        $("#submitbut").removeClass('hidden');
+                        $("#spinner").addClass("hidden");
+                        console.log('Form reset after successful upload.');
+                    } else {
+                        console.log('Error: ' + response.message);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.log(error);
+                }
+            })
+        });
+    });
 </script>
 
 <?php

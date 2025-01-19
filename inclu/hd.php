@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Automation | AI</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="public/js/jQuery.js"></script>
     <script>
         // Function to toggle sidebar visibility
         function toggleSidebar() {
@@ -20,7 +21,7 @@
         <!-- Sidebar -->
         <div id="sidebar" class="hidden md:flex flex-col w-64 bg-slate-950">
             <div class="flex items-center justify-center h-16 bg-slate-950">
-                <span class="text-white font-bold uppercase">AutomationAI.com   </span>
+                <span class="text-white font-bold uppercase">AutomationAI.com </span>
             </div>
             <div class="flex flex-col flex-1 overflow-y-auto">
                 <nav class="flex-1 px-2 py-4 bg-slate-950">
@@ -76,5 +77,3 @@
             <!-- Main Section -->
             <main class="p-4">
                 <!-- Content goes here -->
-
-
