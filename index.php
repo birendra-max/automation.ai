@@ -17,7 +17,7 @@ include 'inclu/hd.php';
                             podcast show notes
                         </span>
                     </span>
-                    <div class="mt-2">10X faster
+                    <div class="mt-2 text-black">10X faster
                         <span class="relative mt-3 whitespace-nowrap text-blue-600"><svg aria-hidden="true" viewBox="0 0 418 42"
                                 class="absolute top-3/4 left-0 right-0 m-auto h-[0.58em] w-fit fill-pink-400/50"
                                 preserveAspectRatio="none">

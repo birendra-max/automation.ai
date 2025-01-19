@@ -22,7 +22,7 @@ include 'inclu/hd.php';
                         <input type="file" accept=".xlsx,.xls"
                             class="absolute inset-0 m-0 p-0 w-full h-full opacity-0 cursor-pointer"
                             x-on:change="files = $event.target.files; console.log($event.target.files);"
-                            x-on:dragover="$el.classList.add('active')" x-on:dragleave="$el.classList.remove('active')" x-on:drop="$el.classList.remove('active')">
+                            x-on:dragover="$el.classList.add('active')" x-on:dragleave="$el.classList.remove('active')" x-on:drop="$el.classList.remove('active')" required>
 
                         <!-- File selected template -->
                         <template x-if="files !== null">
@@ -59,15 +59,20 @@ include 'inclu/hd.php';
                         class="w-full md:w-auto bg-indigo-600 text-white rounded-lg px-6 py-3 md:ml-8 font-semibold hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 transition-all duration-300">
                         Send Mail
                     </button>
+                    <div class="md:ml-10">
+                        <?php
+                        include 'inclu/spinner.php';
+                        ?>
+                    </div>
                 </div>
             </form>
         </div>
     </div>
 </section>
 
+<script>
 
-<!-- Mobile Responsive Design with Tailwind CSS -->
-
+</script>
 
 <?php
 include 'inclu/footer.php';

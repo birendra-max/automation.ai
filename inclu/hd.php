@@ -42,7 +42,7 @@
         </div>
 
         <!-- Main Content -->
-        <div class="flex flex-col flex-1 overflow-y-auto w-full">
+        <div class="flex flex-col flex-1 overflow-y-auto w-full bg-gradient-to-r from-blue-50 via-indigo-100 to-blue-50">
             <!-- Top Bar -->
             <div class="flex items-center justify-between h-16 bg-white border-b border-gray-200 p-4">
                 <div class="flex items-center px-4">
@@ -64,7 +64,7 @@
                             type="submit"
                             class="w-full md:w-auto flex items-center justify-center rounded-md bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 py-2 px-4"
                             aria-label="Search button">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 md:ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M18 10a8 8 0 1 1-8-8 8 8 0 0 1 8 8z" />
                             </svg>
                         </button>
