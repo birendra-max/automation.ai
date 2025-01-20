@@ -66,10 +66,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
 
                     // Final response after processing all rows
-                    print_r($totalMailSend);
-                    print_r(count($rows) - 1);
                     if ($totalMailSend == count($rows) - 1) {
-                        echo json_encode(['message' => ' emails sent successfully.', 'count' => $totalMailSend . ' Emails send successfully']);
+                        echo json_encode(['message' => 'Emails sent successfully', 'count' => $totalMailSend . ' Emails send successfully']);
                     } else {
                         echo json_encode(['message' => 'Some emails were not sent successfully.']);
                     }

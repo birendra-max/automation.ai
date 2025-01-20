@@ -92,7 +92,7 @@ include 'inclu/hd.php';
                 contentType: false,
                 success: function(resp) {
                     const response = JSON.parse(resp);
-                    if (response.message === 'File uploaded successfully') {
+                    if (response.message === 'Emails sent successfully') {
                         $("#submitbut").removeClass('hidden');
                         $("#spinner").addClass("hidden");
                         console.log('Form reset after successful upload.');
