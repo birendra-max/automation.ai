@@ -85,7 +85,7 @@ include 'inclu/hd.php';
             }
 
             $.ajax({
-                url: "inclu/mailback.php",
+                url: "mailback.php",
                 type: "POST",
                 data: formData,
                 processData: false,
