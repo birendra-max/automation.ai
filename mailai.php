@@ -9,7 +9,7 @@ include 'inclu/hd.php';
 <section class="mt-12">
     <div class="max-w-7xl mx-auto bg-white border border-gray-300 shadow-lg rounded-lg p-8">
         <!-- File Upload Section -->
-        <div class="w-full mb-6">
+        <div class="w-full">
             <h3 class="text-lg font-semibold mb-4">Upload Your File</h3>
             <div class="p-6 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:shadow-md transition-all">
                 <!-- File Input (hidden by Tailwind class) -->
@@ -24,7 +24,7 @@ include 'inclu/hd.php';
                 <div id="fileList" class="mt-4"></div>
             </div>
             <!-- Error Message -->
-            <div id="error-message" class="text-red-500 mt-2 hidden">
+            <div id="error-message" class="text-red-500 hidden">
                 Please upload a valid Excel file (.xls, .xlsx).
             </div>
         </div>
