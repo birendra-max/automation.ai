@@ -1,44 +1,38 @@
 <?php
-header('Content-Type: application/json');
+// Set the directory where images will be saved
+$uploadDir = 'uploads/';
 
-// Define allowed file types and size limit (e.g., 5MB)
-$allowedFileTypes = ['image/jpeg', 'image/png', 'image/gif'];
-$maxFileSize = 5 * 1024 * 1024; // 5MB
+// Check if the upload directory exists, if not, create it
+if (!is_dir($uploadDir)) {
+    mkdir($uploadDir, 0777, true);
+}
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['upload'])) {
+if ($_FILES['upload']) {
     $file = $_FILES['upload'];
+    $fileName = basename($file['name']);
+    $filePath = $uploadDir . $fileName;
 
-    // Validate file size
-    if ($file['size'] > $maxFileSize) {
+    // Ensure the file is an image
+    $fileType = mime_content_type($file['tmp_name']);
+    $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+
+    if (!in_array($fileType, $allowedTypes)) {
         http_response_code(400);
-        echo json_encode(['error' => 'File size exceeds the 5MB limit.']);
+        echo json_encode(['error' => 'Invalid file type. Only JPG, PNG, and GIF files are allowed.']);
         exit;
     }
 
-    // Validate file type
-    if (!in_array($file['type'], $allowedFileTypes)) {
-        http_response_code(400);
-        echo json_encode(['error' => 'Invalid file type. Only JPEG, PNG, and GIF are allowed.']);
-        exit;
-    }
-
-    // Set upload directory
-    $uploadDir = __DIR__ . '/public/img/';
-    $uploadPath = $uploadDir . basename($file['name']);
-
-    // Create the uploads directory if it doesn't exist
-    if (!is_dir($uploadDir)) {
-        mkdir($uploadDir, 0777, true);
-    }
-
-    // Move the uploaded file to the uploads directory
-    if (move_uploaded_file($file['tmp_name'], $uploadPath)) {
-        echo json_encode(['url' => '/public/img/' . basename($file['name'])]);
+    // Move the file to the upload directory
+    if (move_uploaded_file($file['tmp_name'], $filePath)) {
+        // Return the uploaded file's URL
+        echo json_encode([
+            'url' => 'http://' . $_SERVER['HTTP_HOST'] . '/' . $filePath
+        ]);
     } else {
         http_response_code(500);
-        echo json_encode(['error' => 'Failed to upload file.']);
+        echo json_encode(['error' => 'Failed to move the uploaded file.']);
     }
 } else {
     http_response_code(400);
-    echo json_encode(['error' => 'Invalid request.']);
+    echo json_encode(['error' => 'No file was uploaded.']);
 }

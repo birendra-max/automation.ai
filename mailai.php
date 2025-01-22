@@ -6,7 +6,7 @@
 include 'inclu/hd.php';
 ?>
 
-<section class="mt-12">
+<section class="mt-4">
     <div class="max-w-7xl mx-auto bg-white border border-gray-300 shadow-lg rounded-lg p-8">
         <!-- File Upload Section -->
         <div class="w-full">
@@ -25,8 +25,8 @@ include 'inclu/hd.php';
         </div>
 
         <!-- FAQ Section -->
-        <section id="faq" class="container mx-auto py-8 px-4">
-            <div id="faq-container" class="space-y-6"></div>
+        <section id="faq" class="container mx-auto py-8">
+            <form id="faq-container" class="space-y-6"></form>
         </section>
     </div>
 
@@ -34,7 +34,40 @@ include 'inclu/hd.php';
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+
+
+    <link rel="stylesheet" href="https://cdn.ckeditor.com/ckeditor5/44.1.0/ckeditor5.css" crossorigin>
+    <link rel="stylesheet" href="https://cdn.ckeditor.com/ckeditor5-premium-features/44.1.0/ckeditor5-premium-features.css" crossorigin>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+        @media print {
+            body {
+                margin: 0 !important;
+            }
+        }
+
+        .main-container {
+            font-family: 'Lato';
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+            width: 100%;
+        }
+
+        .ck-content {
+            font-family: 'Lato';
+            line-height: 1.6;
+            word-break: break-word;
+            width: 100%;
+        }
+
+        .editor-container_classic-editor .editor-container__editor {
+            min-width: 100%;
+            max-width: 100%;
+        }
+    </style>
 
     <script>
         $(document).ready(function() {
@@ -67,109 +100,225 @@ include 'inclu/hd.php';
                             $("#faq-container").empty();
 
                             $("#faq-container").append(`
-                                <h3 class="mb-8 text-teal-900 text-center text-3xl font-semibold underline decoration-teal-300/80">
+                                <h3 class="mb-8 text-teal-900 text-left text-3xl font-semibold underline decoration-teal-300/80">
                                     Email Editor
                                 </h3>
                             `);
 
-                            faqData.forEach((item, index) => {
-                                const faqItem = `
+                            faqData.forEach((e, i) => {
+                                let t = `
                                     <div class="faq-item border rounded-lg shadow-md mb-4">
-                                        <div class="flex items-center justify-between bg-teal-600 w-full cursor-pointer px-6 py-4 text-white font-medium hover:bg-teal-700 transition duration-300" data-index="${index}">
-                                            <h4 class="text-lg">Subject: ${item.subject}</h4>
+                                        <div class="flex items-center justify-between bg-teal-600 w-full cursor-pointer px-6 py-4 text-white font-medium hover:bg-teal-700 transition duration-300" data-index="${i}">
+                                            <h4 class="text-lg">Subject: ${e.subject}</h4>
                                             <i class="fas fa-caret-down text-white"></i>
                                         </div>
                                         <div class="px-6 py-4 faq-answer hidden">
                                             <div class="mb-4">
-                                                <label for="name-${index}" class="block text-teal-600 font-medium">Name</label>
-                                                <input type="text" id="name-${index}" value="${item.name}" class="w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500" placeholder="Enter recipient's name">
+                                                <label for="name-${i}" class="block text-teal-600 font-medium">Name</label>
+                                                <input type="text" id="name-${i}" value="${e.name}" class="w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500" placeholder="Enter recipient's name" name="username">
                                             </div>
                                             <div class="mb-4">
-                                                <label for="email-${index}" class="block text-teal-600 font-medium">Email</label>
-                                                <input type="email" id="email-${index}" value="${item.email}" class="w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500" placeholder="Enter recipient email">
+                                                <label for="email-${i}" class="block text-teal-600 font-medium">Email</label>
+                                                <input type="email" id="email-${i}" value="${e.email}" class="w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500" placeholder="Enter recipient email" name="emailid">
                                             </div>
                                             <div class="mb-4">
-                                                <label for="subject-${index}" class="block text-teal-600 font-medium">Subject</label>
-                                                <input type="text" id="subject-${index}" value="${item.subject}" class="w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500" placeholder="Enter email subject">
+                                                <label for="subject-${i}" class="block text-teal-600 font-medium">Subject</label>
+                                                <input type="text" id="subject-${i}" value="${e.subject}" class="w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500" placeholder="Enter email subject" name="subject">
                                             </div>
-                                            <div class="mb-4">
-                                                <label for="message-${index}" class="block text-teal-600 font-medium">Mail Prompt</label>
-                                                <textarea id="message-${index}" class="editor">${item.prompt || ''}</textarea>
+                                            <div class="main-container" class="mb-4">
+                                                <div class="editor-container editor-container_classic-editor" id="editor-container">
+                                                    <div class="editor-container__editor">
+                                                        <label for="message-${i}" class="block text-teal-600 font-medium">Mail Prompt</label>
+                                                        <textarea id="editor-${i}" name='emailprompt'>
+                                                            ${e.prompt || ""}
+                                                        </textarea>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 `;
-                                $("#faq-container").append(faqItem);
 
-                                // Initialize CKEditor for the new textarea
-                                ClassicEditor.create(document.querySelector(`#message-${index}`), {
-                                    licenseKey: 'eyJhbGciOiJFUzI1NiJ9.eyJleHAiOjE3Mzg3MTM1OTksImp0aSI6Ijk0MTVjNTE0LWMxNzQtNDNmYi05NzdlLWM3MzA2ZmJkNGI2OSIsInVzYWdlRW5kcG9pbnQiOiJodHRwczovL3Byb3h5LWV2ZW50LmNrZWRpdG9yLmNvbSIsImRpc3RyaWJ1dGlvbkNoYW5uZWwiOlsiY2xvdWQiLCJkcnVwYWwiLCJzaCJdLCJ3aGl0ZUxhYmVsIjp0cnVlLCJsaWNlbnNlVHlwZSI6InRyaWFsIiwiZmVhdHVyZXMiOlsiKiJdLCJ2YyI6ImY5YzBhMTVmIn0.f0XJV7zr5iodscOa1BYCITOV0nLHgodjR-k65uL6M-5KPmISCc69xw_N9VpfMPoeC1vyWuCeqY0pM06Vt7obRQ',
-                                    collaboration: {
-                                        channelId: 'YOUR_CHANNEL_ID', // Replace with your unique channel ID
-                                        webSocketUrl: 'wss://YOUR_WEBSOCKET_URL' // Replace with your WebSocket URL
-                                    },
+                                $("#faq-container").append(t);
+
+                                let {
+                                    ClassicEditor,
+                                    Autoformat,
+                                    AutoImage,
+                                    Autosave,
+                                    BlockQuote,
+                                    Bold,
+                                    CKBox,
+                                    CKBoxImageEdit,
+                                    CloudServices,
+                                    Essentials,
+                                    FindAndReplace,
+                                    FullPage,
+                                    GeneralHtmlSupport,
+                                    Heading,
+                                    HtmlComment,
+                                    HtmlEmbed,
+                                    ImageBlock,
+                                    ImageCaption,
+                                    ImageInline,
+                                    ImageInsert,
+                                    ImageInsertViaUrl,
+                                    ImageResize,
+                                    ImageStyle,
+                                    ImageTextAlternative,
+                                    ImageToolbar,
+                                    ImageUpload,
+                                    Indent,
+                                    IndentBlock,
+                                    Italic,
+                                    Link,
+                                    LinkImage,
+                                    List,
+                                    ListProperties,
+                                    MediaEmbed,
+                                    Mention,
+                                    Paragraph,
+                                    PasteFromOffice,
+                                    PictureEditing,
+                                    ShowBlocks,
+                                    SourceEditing,
+                                    SpecialCharacters,
+                                    SpecialCharactersArrows,
+                                    SpecialCharactersCurrency,
+                                    SpecialCharactersEssentials,
+                                    SpecialCharactersLatin,
+                                    SpecialCharactersMathematical,
+                                    SpecialCharactersText,
+                                    Table,
+                                    TableCaption,
+                                    TableCellProperties,
+                                    TableColumnResize,
+                                    TableProperties,
+                                    TableToolbar,
+                                    TextTransformation,
+                                    TodoList,
+                                    Underline
+                                } = window.CKEDITOR;
+
+                                let config = {
                                     toolbar: [
-                                        "previousPage",
-                                        "nextPage",
-                                        "|",
-                                        "insertMergeField",
-                                        "previewMergeFields",
-                                        "|",
-                                        "formatPainter",
-                                        "|",
-                                        "heading",
-                                        "|",
-                                        "fontSize",
-                                        "fontFamily",
-                                        "fontColor",
-                                        "fontBackgroundColor",
-                                        "|",
-                                        "bold",
-                                        "italic",
-                                        "underline",
-                                        "|",
-                                        "link",
-                                        "insertImage",
-                                        "insertTable",
-                                        "|",
-                                        "alignment",
-                                        "|",
-                                        "bulletedList",
-                                        "numberedList",
-                                        "multiLevelList",
-                                        "todoList",
-                                        "outdent",
-                                        "indent",
+                                        "insertMergeField", "previewMergeFields", "|", "sourceEditing", "showBlocks", "formatPainter", "caseChange", "findAndReplace", "|", "heading", "|", "bold", "italic", "underline", "|",
+                                        "specialCharacters", "link", "insertImage", "ckbox", "mediaEmbed", "insertTable", "insertTemplate", "blockQuote", "htmlEmbed", "|",
+                                        "bulletedList", "numberedList", "todoList", "outdent", "indent"
                                     ],
+                                    plugins: [
+                                        Autoformat, AutoImage, Autosave, BlockQuote, Bold, CloudServices, Essentials, FindAndReplace, FullPage, GeneralHtmlSupport, Heading, HtmlComment, HtmlEmbed, ImageBlock,
+                                        ImageCaption, ImageInline, ImageInsert, ImageInsertViaUrl, ImageResize, ImageStyle, ImageTextAlternative, ImageToolbar, ImageUpload, Indent, IndentBlock, Italic, Link,
+                                        LinkImage, List, ListProperties, MediaEmbed, Mention, Paragraph, PasteFromOffice, PictureEditing, ShowBlocks, SourceEditing, SpecialCharacters, SpecialCharactersArrows,
+                                        SpecialCharactersCurrency, SpecialCharactersEssentials, SpecialCharactersLatin, SpecialCharactersMathematical, SpecialCharactersText, Table, TableCaption, TableCellProperties,
+                                        TableColumnResize, TableProperties, TableToolbar, TextTransformation, TodoList, Underline
+                                    ],
+                                    cloudServices: {
+                                        tokenUrl: "https://yuhsh6ka_c70.cke-cs.com/token/dev/27d69f91e581c879c0c29039c419177c9fcdddbdc2fd291b361654f88663?limit=10"
+                                    },
+                                    heading: {
+                                        options: [{
+                                                model: "paragraph",
+                                                title: "Paragraph",
+                                                class: "ck-heading_paragraph"
+                                            },
+                                            {
+                                                model: "heading1",
+                                                view: "h1",
+                                                title: "Heading 1",
+                                                class: "ck-heading_heading1"
+                                            },
+                                            {
+                                                model: "heading2",
+                                                view: "h2",
+                                                title: "Heading 2",
+                                                class: "ck-heading_heading2"
+                                            },
+                                            {
+                                                model: "heading3",
+                                                view: "h3",
+                                                title: "Heading 3",
+                                                class: "ck-heading_heading3"
+                                            },
+                                            {
+                                                model: "heading4",
+                                                view: "h4",
+                                                title: "Heading 4",
+                                                class: "ck-heading_heading4"
+                                            },
+                                            {
+                                                model: "heading5",
+                                                view: "h5",
+                                                title: "Heading 5",
+                                                class: "ck-heading_heading5"
+                                            },
+                                            {
+                                                model: "heading6",
+                                                view: "h6",
+                                                title: "Heading 6",
+                                                class: "ck-heading_heading6"
+                                            }
+                                        ]
+                                    },
+                                    htmlSupport: {
+                                        allow: [{
+                                            name: /^.*$/,
+                                            styles: true,
+                                            attributes: true,
+                                            classes: true
+                                        }]
+                                    },
                                     image: {
                                         toolbar: [
-                                            "imageTextAlternative",
-                                            "imageStyle:full",
-                                            "imageStyle:side",
-                                            "|",
-                                            "linkImage"
-                                        ],
-                                        upload: {
-                                            // Example: URL to the server endpoint for image upload
-                                            url: '/upload-image-endpoint', // Replace with your server URL for image uploads
-                                            method: 'POST',
-                                            headers: {
-                                                'Authorization': 'Bearer YOUR_ACCESS_TOKEN', // If you need authorization
-                                                'X-CSRF-TOKEN': 'your-csrf-token' // Include CSRF token if necessary
-                                            },
-                                            withCredentials: true,
-                                            success: (response) => {
-                                                console.log("Image upload successful", response);
-                                            },
-                                            error: (error) => {
-                                                console.error("Image upload error", error);
+                                            "toggleImageCaption", "imageTextAlternative", "|", "imageStyle:inline", "imageStyle:wrapText", "imageStyle:breakText", "|", "resizeImage", "|", "ckboxImageEdit"
+                                        ]
+                                    },
+                                    initialData: e.prompt,
+                                    licenseKey: "eyJhbGciOiJFUzI1NiJ9.eyJleHAiOjE3Mzg3MTM1OTksImp0aSI6Ijk0MTVjNTE0LWMxNzQtNDNmYi05NzdlLWM3MzA2ZmJkNGI2OSIsInVzYWdlRW5kcG9pbnQiOiJodHRwczovL3Byb3h5LWV2ZW50LmNrZWRpdG9yLmNvbSIsImRpc3RyaWJ1dGlvbkNoYW5uZWwiOlsiY2xvdWQiLCJkcnVwYWwiLCJzaCJdLCJ3aGl0ZUxhYmVsIjp0cnVlLCJsaWNlbnNlVHlwZSI6InRyaWFsIiwiZmVhdHVyZXMiOlsiKiJdLCJ2YyI6ImY5YzBhMTVmIn0.f0XJV7zr5iodscOa1BYCITOV0nLHgodjR-k65uL6M-5KPmISCc69xw_N9VpfMPoeC1vyWuCeqY0pM06Vt7obRQ",
+                                    link: {
+                                        addTargetToExternalLinks: true,
+                                        defaultProtocol: "https://",
+                                        decorators: {
+                                            toggleDownloadable: {
+                                                mode: "manual",
+                                                label: "Downloadable",
+                                                attributes: {
+                                                    download: "file"
+                                                }
                                             }
                                         }
+                                    },
+                                    mention: {
+                                        feeds: [{
+                                            marker: "@",
+                                            feed: []
+                                        }]
+                                    },
+                                    mergeFields: {},
+                                    placeholder: "Type or paste your content here!",
+                                    table: {
+                                        contentToolbar: ["tableColumn", "tableRow", "mergeTableCells", "tableProperties", "tableCellProperties"]
+                                    },
+                                    template: {
+                                        definitions: [{
+                                            title: "Introduction",
+                                            description: "Simple introduction to an article",
+                                            icon: '<svg width="45" height="45" viewBox="0 0 45 45" fill="none" xmlns="http://www.w3.org/2000/svg">...</svg>',
+                                            data: "<h2>Introduction</h2><p>In today's fast-paced world...</p>"
+                                        }]
                                     }
-                                }).catch(error => console.error('Error initializing CKEditor with collaboration:', error));
+                                };
 
-
+                                ClassicEditor.create(document.querySelector(`#editor-${i}`), config).catch(error => {
+                                    console.error('Error initializing CKEditor:', error);
+                                });
                             });
+
+                            $("#faq-container").append(`
+                                <button type='submit' class="px-6 py-2 min-w-[120px] text-center text-violet-600 border border-violet-600 rounded hover:bg-violet-600 hover:text-white active:bg-indigo-500 focus:outline-none focus:ring">
+                                    Send Mail
+                                </button>
+                            `);
 
                             $(".faq-item > div").click(function() {
                                 const answer = $(this).siblings(".faq-answer");
@@ -188,6 +337,10 @@ include 'inclu/hd.php';
             });
         });
     </script>
+    <script src="https://cdn.ckeditor.com/ckeditor5/44.1.0/ckeditor5.umd.js" crossorigin></script>
+    <script src="https://cdn.ckeditor.com/ckeditor5-premium-features/44.1.0/ckeditor5-premium-features.umd.js"
+        crossorigin></script>
+    <script src="https://cdn.ckbox.io/ckbox/2.6.1/ckbox.js" crossorigin></script>
 
     <style>
         #faq-container .faq-answer.hidden {
@@ -195,6 +348,31 @@ include 'inclu/hd.php';
         }
     </style>
 </section>
+
+
+<script>
+    $(document).ready(function() {
+        $('#faq-container').submit(function(e) {
+            e.preventDefault();
+            var formData = $(this).serialize();
+            let decodeData = decodeURIComponent(formData);
+            console.log(decodeData);
+            console.log('\n')
+
+            // $.ajax({
+            //     url: 'anotherPage.php',
+            //     type: 'POST',
+            //     data: formData,
+            //     success: function(response) {
+            //         console.log('Data sent successfully');
+            //     },
+            //     error: function(xhr, status, error) {
+            //         console.error('Error:', error);
+            //     }
+            // });
+        });
+    });
+</script>
 
 
 <?php
