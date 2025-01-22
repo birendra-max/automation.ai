@@ -74,48 +74,100 @@ include 'inclu/hd.php';
 
                             faqData.forEach((item, index) => {
                                 const faqItem = `
-                                        <div class="faq-item border rounded-lg shadow-md mb-4">
-                                            <div class="flex items-center justify-between bg-teal-600 w-full cursor-pointer px-6 py-4 text-white font-medium hover:bg-teal-700 transition duration-300" data-index="${index}">
-                                                <h4 class="text-lg">Subject: ${item.subject}</h4>
-                                                <i class="fas fa-caret-down text-white"></i>
+                                    <div class="faq-item border rounded-lg shadow-md mb-4">
+                                        <div class="flex items-center justify-between bg-teal-600 w-full cursor-pointer px-6 py-4 text-white font-medium hover:bg-teal-700 transition duration-300" data-index="${index}">
+                                            <h4 class="text-lg">Subject: ${item.subject}</h4>
+                                            <i class="fas fa-caret-down text-white"></i>
+                                        </div>
+                                        <div class="px-6 py-4 faq-answer hidden">
+                                            <div class="mb-4">
+                                                <label for="name-${index}" class="block text-teal-600 font-medium">Name</label>
+                                                <input type="text" id="name-${index}" value="${item.name}" class="w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500" placeholder="Enter recipient's name">
                                             </div>
-                                            <div class="px-6 py-4 faq-answer hidden">
-                                                <div class="mb-4">
-                                                    <label for="name-${index}" class="block text-teal-600 font-medium">Name</label>
-                                                    <input type="text" id="name-${index}" value="${item.name}" class="w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500" placeholder="Enter recipient's name">
-                                                </div>
-                                                <div class="mb-4">
-                                                    <label for="email-${index}" class="block text-teal-600 font-medium">Email</label>
-                                                    <input type="email" id="email-${index}" value="${item.email}" class="w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500" placeholder="Enter recipient email">
-                                                </div>
-                                                <div class="mb-4">
-                                                    <label for="subject-${index}" class="block text-teal-600 font-medium">Subject</label>
-                                                    <input type="text" id="subject-${index}" value="${item.subject}" class="w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500" placeholder="Enter email subject">
-                                                </div>
-                                                <div class="mb-4">
-                                                    <label for="message-${index}" class="block text-teal-600 font-medium">Mail Prompt</label>
-                                                    <textarea id="message-${index}" class="editor">${item.prompt || ''}</textarea>
-                                                </div>
+                                            <div class="mb-4">
+                                                <label for="email-${index}" class="block text-teal-600 font-medium">Email</label>
+                                                <input type="email" id="email-${index}" value="${item.email}" class="w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500" placeholder="Enter recipient email">
+                                            </div>
+                                            <div class="mb-4">
+                                                <label for="subject-${index}" class="block text-teal-600 font-medium">Subject</label>
+                                                <input type="text" id="subject-${index}" value="${item.subject}" class="w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500" placeholder="Enter email subject">
+                                            </div>
+                                            <div class="mb-4">
+                                                <label for="message-${index}" class="block text-teal-600 font-medium">Mail Prompt</label>
+                                                <textarea id="message-${index}" class="editor">${item.prompt || ''}</textarea>
                                             </div>
                                         </div>
-                                    `;
+                                    </div>
+                                `;
                                 $("#faq-container").append(faqItem);
 
                                 // Initialize CKEditor for the new textarea
                                 ClassicEditor.create(document.querySelector(`#message-${index}`), {
-                                        licenseKey: 'eyJhbGciOiJFUzI1NiJ9.eyJleHAiOjE3NjkwMzk5OTksImp0aSI6ImU4YmQ2ZjU5LWQwOGYtNDQxMy05NmY5LTQwYWFmMWU3YzcxYyIsImxpY2Vuc2VkSG9zdHMiOlsiMTI3LjAuMC4xIiwibG9jYWxob3N0IiwiMTkyLjE2OC4qLioiLCIxMC4qLiouKiIsIjE3Mi4qLiouKiIsIioudGVzdCIsIioubG9jYWxob3N0IiwiKi5sb2NhbCJdLCJ1c2FnZUVuZHBvaW50IjoiaHR0cHM6Ly9wcm94eS1ldmVudC5ja2VkaXRvci5jb20iLCJkaXN0cmlidXRpb25DaGFubmVsIjpbImNsb3VkIiwiZHJ1cGFsIl0sImxpY2Vuc2VUeXBlIjoiZGV2ZWxvcG1lbnQiLCJmZWF0dXJlcyI6WyJEUlVQIl0sInZjIjoiZjRhMWY3ZTMifQ._c3IAAR1ZA9xadANk9GeHmviOsDUzK8977eWmBcidsE6IIa-GF-lJrdynkDir8ohQHzxPfykD9Nsud4mB5Yu0g', // Replace with your actual license key
+                                    licenseKey: 'eyJhbGciOiJFUzI1NiJ9.eyJleHAiOjE3Mzg3MTM1OTksImp0aSI6Ijk0MTVjNTE0LWMxNzQtNDNmYi05NzdlLWM3MzA2ZmJkNGI2OSIsInVzYWdlRW5kcG9pbnQiOiJodHRwczovL3Byb3h5LWV2ZW50LmNrZWRpdG9yLmNvbSIsImRpc3RyaWJ1dGlvbkNoYW5uZWwiOlsiY2xvdWQiLCJkcnVwYWwiLCJzaCJdLCJ3aGl0ZUxhYmVsIjp0cnVlLCJsaWNlbnNlVHlwZSI6InRyaWFsIiwiZmVhdHVyZXMiOlsiKiJdLCJ2YyI6ImY5YzBhMTVmIn0.f0XJV7zr5iodscOa1BYCITOV0nLHgodjR-k65uL6M-5KPmISCc69xw_N9VpfMPoeC1vyWuCeqY0pM06Vt7obRQ',
+                                    collaboration: {
+                                        channelId: 'YOUR_CHANNEL_ID', // Replace with your unique channel ID
+                                        webSocketUrl: 'wss://YOUR_WEBSOCKET_URL' // Replace with your WebSocket URL
+                                    },
+                                    toolbar: [
+                                        "previousPage",
+                                        "nextPage",
+                                        "|",
+                                        "insertMergeField",
+                                        "previewMergeFields",
+                                        "|",
+                                        "formatPainter",
+                                        "|",
+                                        "heading",
+                                        "|",
+                                        "fontSize",
+                                        "fontFamily",
+                                        "fontColor",
+                                        "fontBackgroundColor",
+                                        "|",
+                                        "bold",
+                                        "italic",
+                                        "underline",
+                                        "|",
+                                        "link",
+                                        "insertImage",
+                                        "insertTable",
+                                        "|",
+                                        "alignment",
+                                        "|",
+                                        "bulletedList",
+                                        "numberedList",
+                                        "multiLevelList",
+                                        "todoList",
+                                        "outdent",
+                                        "indent",
+                                    ],
+                                    image: {
                                         toolbar: [
-                                            'heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', '|', 'blockQuote', 'undo', 'redo', 'imageUpload'
+                                            "imageTextAlternative",
+                                            "imageStyle:full",
+                                            "imageStyle:side",
+                                            "|",
+                                            "linkImage"
                                         ],
-                                        simpleUpload: {
-                                            uploadUrl: '/imgUpload.php', // Replace this with your backend endpoint
+                                        upload: {
+                                            // Example: URL to the server endpoint for image upload
+                                            url: '/upload-image-endpoint', // Replace with your server URL for image uploads
+                                            method: 'POST',
                                             headers: {
-                                                'X-CSRF-TOKEN': 'your-csrf-token', // Replace with your actual CSRF token if required
-                                                Authorization: 'Bearer your-auth-token' // Replace with your authentication token if required
+                                                'Authorization': 'Bearer YOUR_ACCESS_TOKEN', // If you need authorization
+                                                'X-CSRF-TOKEN': 'your-csrf-token' // Include CSRF token if necessary
+                                            },
+                                            withCredentials: true,
+                                            success: (response) => {
+                                                console.log("Image upload successful", response);
+                                            },
+                                            error: (error) => {
+                                                console.error("Image upload error", error);
                                             }
                                         }
-                                    })
-                                    .catch(error => console.error('Error initializing CKEditor:', error));
+                                    }
+                                }).catch(error => console.error('Error initializing CKEditor with collaboration:', error));
+
 
                             });
 
@@ -143,7 +195,6 @@ include 'inclu/hd.php';
         }
     </style>
 </section>
-
 
 
 <?php

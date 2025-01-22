@@ -7,6 +7,7 @@
     <title>Automation | AI</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="public/js/jQuery.js"></script>
+    
     <script>
         // Function to toggle sidebar visibility
         function toggleSidebar() {
