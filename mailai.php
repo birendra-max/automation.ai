@@ -97,13 +97,14 @@ include 'inclu/hd.php';
                     success: function(resp) {
                         try {
                             const faqData = JSON.parse(resp);
+                            console.log(faqData);
                             $("#faq-container").empty();
 
                             $("#faq-container").append(`
-                                <h3 class="mb-8 text-teal-900 text-left text-3xl font-semibold underline decoration-teal-300/80">
-                                    Email Editor
-                                </h3>
-                            `);
+                            <h3 class="mb-8 text-teal-900 text-left text-3xl font-semibold underline decoration-teal-300/80">
+                                Email Editor
+                            </h3>
+                        `);
 
                             faqData.forEach((e, i) => {
                                 let t = `
@@ -135,6 +136,9 @@ include 'inclu/hd.php';
                                                     </div>
                                                 </div>
                                             </div>
+                                            <button type="button" class="save-btn px-4 py-2 mt-4 bg-teal-600 text-white rounded hover:bg-teal-700" data-index="${i}">
+                                                Save
+                                            </button>
                                         </div>
                                     </div>
                                 `;
@@ -148,8 +152,6 @@ include 'inclu/hd.php';
                                     Autosave,
                                     BlockQuote,
                                     Bold,
-                                    CKBox,
-                                    CKBoxImageEdit,
                                     CloudServices,
                                     Essentials,
                                     FindAndReplace,
@@ -216,63 +218,6 @@ include 'inclu/hd.php';
                                     cloudServices: {
                                         tokenUrl: "https://yuhsh6ka_c70.cke-cs.com/token/dev/27d69f91e581c879c0c29039c419177c9fcdddbdc2fd291b361654f88663?limit=10"
                                     },
-                                    heading: {
-                                        options: [{
-                                                model: "paragraph",
-                                                title: "Paragraph",
-                                                class: "ck-heading_paragraph"
-                                            },
-                                            {
-                                                model: "heading1",
-                                                view: "h1",
-                                                title: "Heading 1",
-                                                class: "ck-heading_heading1"
-                                            },
-                                            {
-                                                model: "heading2",
-                                                view: "h2",
-                                                title: "Heading 2",
-                                                class: "ck-heading_heading2"
-                                            },
-                                            {
-                                                model: "heading3",
-                                                view: "h3",
-                                                title: "Heading 3",
-                                                class: "ck-heading_heading3"
-                                            },
-                                            {
-                                                model: "heading4",
-                                                view: "h4",
-                                                title: "Heading 4",
-                                                class: "ck-heading_heading4"
-                                            },
-                                            {
-                                                model: "heading5",
-                                                view: "h5",
-                                                title: "Heading 5",
-                                                class: "ck-heading_heading5"
-                                            },
-                                            {
-                                                model: "heading6",
-                                                view: "h6",
-                                                title: "Heading 6",
-                                                class: "ck-heading_heading6"
-                                            }
-                                        ]
-                                    },
-                                    htmlSupport: {
-                                        allow: [{
-                                            name: /^.*$/,
-                                            styles: true,
-                                            attributes: true,
-                                            classes: true
-                                        }]
-                                    },
-                                    image: {
-                                        toolbar: [
-                                            "toggleImageCaption", "imageTextAlternative", "|", "imageStyle:inline", "imageStyle:wrapText", "imageStyle:breakText", "|", "resizeImage", "|", "ckboxImageEdit"
-                                        ]
-                                    },
                                     initialData: e.prompt,
                                     licenseKey: "eyJhbGciOiJFUzI1NiJ9.eyJleHAiOjE3Mzg3MTM1OTksImp0aSI6Ijk0MTVjNTE0LWMxNzQtNDNmYi05NzdlLWM3MzA2ZmJkNGI2OSIsInVzYWdlRW5kcG9pbnQiOiJodHRwczovL3Byb3h5LWV2ZW50LmNrZWRpdG9yLmNvbSIsImRpc3RyaWJ1dGlvbkNoYW5uZWwiOlsiY2xvdWQiLCJkcnVwYWwiLCJzaCJdLCJ3aGl0ZUxhYmVsIjp0cnVlLCJsaWNlbnNlVHlwZSI6InRyaWFsIiwiZmVhdHVyZXMiOlsiKiJdLCJ2YyI6ImY5YzBhMTVmIn0.f0XJV7zr5iodscOa1BYCITOV0nLHgodjR-k65uL6M-5KPmISCc69xw_N9VpfMPoeC1vyWuCeqY0pM06Vt7obRQ",
                                     link: {
@@ -288,44 +233,98 @@ include 'inclu/hd.php';
                                             }
                                         }
                                     },
-                                    mention: {
-                                        feeds: [{
-                                            marker: "@",
-                                            feed: []
-                                        }]
-                                    },
                                     mergeFields: {},
                                     placeholder: "Type or paste your content here!",
                                     table: {
                                         contentToolbar: ["tableColumn", "tableRow", "mergeTableCells", "tableProperties", "tableCellProperties"]
-                                    },
-                                    template: {
-                                        definitions: [{
-                                            title: "Introduction",
-                                            description: "Simple introduction to an article",
-                                            icon: '<svg width="45" height="45" viewBox="0 0 45 45" fill="none" xmlns="http://www.w3.org/2000/svg">...</svg>',
-                                            data: "<h2>Introduction</h2><p>In today's fast-paced world...</p>"
-                                        }]
                                     }
                                 };
 
-                                ClassicEditor.create(document.querySelector(`#editor-${i}`), config).catch(error => {
-                                    console.error('Error initializing CKEditor:', error);
-                                });
+                                // Initialize CKEditor for each editor element dynamically
+                                ClassicEditor.create(document.querySelector(`#editor-${i}`), config)
+                                    .then(editor => {
+                                        // Ensure the editor content is updated immediately on data change
+                                        editor.model.document.on('change:data', function() {
+                                            faqData[i].prompt = editor.getData(); // Update faqData when content changes
+                                        });
+
+                                        // Bind other form fields to the faqData
+                                        $(`#faq-container #name-${i}`).on("input", function() {
+                                            faqData[i].name = $(this).val();
+                                        });
+
+                                        $(`#faq-container #email-${i}`).on("input", function() {
+                                            faqData[i].email = $(this).val();
+                                        });
+
+                                        $(`#faq-container #subject-${i}`).on("input", function() {
+                                            faqData[i].subject = $(this).val();
+                                        });
+
+                                        // Save button logic
+                                        $(`#faq-container .save-btn[data-index=${i}]`).on("click", function() {
+                                            const name = $(`#name-${i}`).val();
+                                            const email = $(`#email-${i}`).val();
+                                            const subject = $(`#subject-${i}`).val();
+                                            const prompt = editor.getData(); // Get the prompt from CKEditor
+
+                                            // Update the faqData with new information
+                                            faqData[i] = {
+                                                ...faqData[i],
+                                                name,
+                                                email,
+                                                subject,
+                                                prompt
+                                            };
+
+                                            // Send the updated data to the server via AJAX
+                                            $.ajax({
+                                                url: "UpdateMail.php", // Your server script for updating data
+                                                type: "POST",
+                                                data: {
+                                                    action: 'update', // Action to identify the request
+                                                    id: faqData[i].id, // Make sure you have a unique ID for each record
+                                                    name: name,
+                                                    email: email,
+                                                    subject: subject,
+                                                    prompt: prompt
+                                                },
+                                                success: function(response) {
+                                                    const result = JSON.parse(response);
+                                                    if (result.status === 'success') {
+                                                        $(this).text('Saved').prop('disabled', true); // Disable the save button after saving
+                                                        console.log(`Data saved successfully for item ${i}:`, faqData[i]);
+                                                    } else {
+                                                        console.error('Error updating data:', result.message);
+                                                    }
+                                                },
+                                                error: function(xhr, status, error) {
+                                                    console.error('Error saving data:', error);
+                                                }
+                                            });
+                                        });
+                                    })
+                                    .catch(error => {
+                                        console.error('Error initializing CKEditor:', error);
+                                    });
+
                             });
 
+                            // Send Mail button
                             $("#faq-container").append(`
                                 <button type='submit' class="px-6 py-2 min-w-[120px] text-center text-violet-600 border border-violet-600 rounded hover:bg-violet-600 hover:text-white active:bg-indigo-500 focus:outline-none focus:ring">
                                     Send Mail
                                 </button>
                             `);
 
+                            // Toggle FAQ items on click
                             $(".faq-item > div").click(function() {
                                 const answer = $(this).siblings(".faq-answer");
                                 answer.toggleClass("hidden");
                                 const icon = $(this).find("i");
                                 icon.toggleClass("fa-caret-down fa-caret-up");
                             });
+
                         } catch (error) {
                             console.error('Error parsing JSON:', error);
                         }
@@ -334,6 +333,7 @@ include 'inclu/hd.php';
                         console.error('Error:', error);
                     }
                 });
+
             });
         });
     </script>
@@ -374,7 +374,38 @@ include 'inclu/hd.php';
     });
 </script>
 
+<?php
+require 'Third-party/vendor/autoload.php';
+require 'inclu/config.php';
+require 'inclu/Mailer.php';
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Check if the updated data is provided
+    if (isset($_POST['action']) && $_POST['action'] == 'update') {
+        // Get the updated data from the request
+        $id = $_POST['id']; // Item ID to identify which record to update
+        $email = $_POST['email'];
+        $name = $_POST['name'];
+        $subject = $_POST['subject'];
+        $prompt = $_POST['prompt'];
+
+        // Prepare the SQL UPDATE query
+        $stmt = $conn->prepare("UPDATE mailautomationai SET email = ?, name = ?, subject = ?, prompt = ? WHERE id = ?");
+        $stmt->bind_param("ssssi", $email, $name, $subject, $prompt, $id);
+
+        if ($stmt->execute()) {
+            echo json_encode(['status' => 'success', 'message' => 'Data updated successfully']);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Failed to update data']);
+        }
+        $stmt->close();
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Invalid request']);
+    }
+} else {
+    echo json_encode(['status' => 'error', 'message' => 'Invalid request method']);
+}
+?>
 <?php
 include 'inclu/footer.php';
 ?>

@@ -1,7 +1,7 @@
 <?php
-require 'Third-party/vendor/autoload.php';
-require 'inclu/config.php';
-require 'inclu/Mailer.php';
+require 'Third-party/vendor/autoload.php'; // Autoload PhpSpreadsheet
+require 'inclu/config.php'; // Include database configuration
+require 'inclu/Mailer.php'; // Include Mailer class if needed
 
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
@@ -13,41 +13,53 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $uploadDir = 'uploads/';
             $uploadPath = $uploadDir . basename($file['name']);
 
-            // Move the uploaded file
             if (move_uploaded_file($file['tmp_name'], $uploadPath)) {
                 try {
-                    // Attempt to load the spreadsheet
+                    // Load the Excel file
                     $spreadsheet = IOFactory::load($uploadPath);
                     $sheet = $spreadsheet->getActiveSheet();
                     $rows = $sheet->toArray();
                     $highestColumn = $sheet->getHighestColumn();
                     $columnIndex = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($highestColumn);
 
-                    // Ensure no more than 4 columns are present
                     if ($columnIndex <= 4) {
+                        // Prepare the data array for inserting into the database
                         $data = [];
 
-                        // Loop through rows (skipping the header row)
                         for ($i = 1; $i < count($rows); $i++) {
-                            // Trim values to avoid extra spaces causing issues
                             $email = trim($rows[$i][0] ?? '');
                             $name = trim($rows[$i][1] ?? '');
                             $subject = trim($rows[$i][2] ?? '');
                             $prompt = trim($rows[$i][3] ?? '');
 
-                            // Only add to data if all fields are present
                             if ($email && $name && $subject && $prompt) {
+                                // Add valid data to the array
                                 $data[] = [
                                     'email' => $email,
                                     'name' => $name,
                                     'subject' => $subject,
                                     'prompt' => $prompt
                                 ];
+
+                                // Insert the data into the database (assuming MySQL)
+                                $stmt = $conn->prepare("INSERT INTO mailautomationai (email, name, subject, prompt) VALUES (?, ?, ?, ?)");
+                                $stmt->bind_param("ssss", $email, $name, $subject, $prompt);
+                                $stmt->execute();
+                                $stmt->close();
                             }
                         }
 
-                        // Return data as JSON response
-                        echo json_encode($data);
+                        // Now fetch the updated data from the database and return it
+                        $result = $conn->query("SELECT * FROM mailautomationai ORDER BY id DESC");
+
+                        // Create an array to store the fetched data
+                        $fetchedData = [];
+                        while ($row = $result->fetch_assoc()) {
+                            $fetchedData[] = $row;
+                        }
+
+                        // Return the fetched data as JSON
+                        echo json_encode($fetchedData);
                     } else {
                         echo json_encode(['message' => 'The uploaded sheet must not have more than 4 columns (email, name, subject, prompt).']);
                     }
@@ -55,6 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     echo json_encode(['message' => 'Error parsing the spreadsheet file.', 'error' => $e->getMessage()]);
                 }
 
+                // Delete the uploaded file after processing
                 unlink($uploadPath);
             } else {
                 echo json_encode(['message' => 'Failed to move the uploaded file.']);
