@@ -42,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 ];
 
                                 // Insert the data into the database (assuming MySQL)
-                                $stmt = $conn->prepare("INSERT INTO mailautomationai (email, name, subject, prompt) VALUES (?, ?, ?, ?)");
+                                $stmt = $conn->prepare("INSERT INTO mail_save (email, name, subject, prompt) VALUES (?, ?, ?, ?)");
                                 $stmt->bind_param("ssss", $email, $name, $subject, $prompt);
                                 $stmt->execute();
                                 $stmt->close();
@@ -50,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         }
 
                         // Now fetch the updated data from the database and return it
-                        $result = $conn->query("SELECT * FROM mailautomationai ORDER BY id DESC");
+                        $result = $conn->query("SELECT * FROM mail_save ORDER BY id DESC");
 
                         // Create an array to store the fetched data
                         $fetchedData = [];

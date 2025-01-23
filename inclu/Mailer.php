@@ -15,7 +15,7 @@ function sendEmail($recipientEmail, $recipientName, $subject, $htmlBody, $altBod
         $mail->Host = 'smtp.hostinger.com';
         $mail->SMTPAuth = true;
         $mail->Username = 'admin@bravodentdesigns.com';
-        $mail->Password = '';
+        $mail->Password = 'Admin@new@pass@3214';
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port = 587;
 

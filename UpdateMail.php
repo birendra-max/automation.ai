@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $prompt = $_POST['prompt'];
 
         // Prepare the SQL UPDATE query
-        $stmt = $conn->prepare("UPDATE mailautomationai SET email = ?, name = ?, subject = ?, prompt = ? WHERE id = ?");
+        $stmt = $conn->prepare("UPDATE mail_save SET email = ?, name = ?, subject = ?, prompt = ? WHERE id = ?");
         $stmt->bind_param("ssssi", $email, $name, $subject, $prompt, $id);
 
         if ($stmt->execute()) {
