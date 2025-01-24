@@ -79,7 +79,7 @@ include 'inclu/hd.php';
                             <div class="editor-container editor-container_classic-editor" id="editor-container">
                                 <div class="editor-container__editor">
                                     <label for="message-${index}" class="block text-teal-600 font-medium">Mail Prompt</label>
-                                    <textarea id="editor" value=""></textarea>
+                                    <textarea id="editor"></textarea>
                                 </div>
                             </div>
                         </div>

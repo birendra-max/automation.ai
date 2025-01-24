@@ -10,6 +10,13 @@
     <link rel="stylesheet" href="https://cdn.ckeditor.com/ckeditor5/44.1.0/ckeditor5.css" crossorigin>
     <link rel="stylesheet" href="https://cdn.ckeditor.com/ckeditor5-premium-features/44.1.0/ckeditor5-premium-features.css" crossorigin>
 
+    <style>
+        #editor {
+            height: 400px;
+            width: 100%;
+        }
+    </style>
+
     <script>
         // Function to toggle sidebar visibility
         function toggleSidebar() {
