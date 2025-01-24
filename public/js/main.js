@@ -239,7 +239,7 @@ const editorConfig = {
 			'ckboxImageEdit'
 		]
 	},
-	initialData: 'i am vicky',
+	initialData: '',
 	licenseKey: LICENSE_KEY,
 	link: {
 		addTargetToExternalLinks: true,

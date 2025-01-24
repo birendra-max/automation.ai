@@ -2,36 +2,44 @@
 require 'Third-party/vendor/autoload.php';
 require 'inclu/config.php';
 require 'inclu/Mailer.php';
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Extract form data
+    $emails = $_POST['emailid'] ?? '';
+    $subject = $_POST['subject'] ?? '';
+    $message = $_POST['editor'] ?? ''; // Adjust field name if needed
 
-$result = $conn->query("SELECT * FROM mail_save");
-
-$resp = [];
-$i = 0;
-while ($row = $result->fetch_assoc()) {
-    $email = $row['email'];
-    $name = $row['name'];
-    $subject = $row['subject'];
-    $prompt = $row['prompt'];
-    $resp[$i] = sendEmail($email, $name, $subject, $prompt, '');
-    $i++;
-}
-
-if ($result->num_rows == $i) {
-    $j = 0;
-    while ($ro = $result->fetch_assoc()) {
-        $stmt = $conn->prepare("INSERT INTO mailautomationai (email, name, subject, prompt) VALUES (?, ?, ?, ?)");
-        $stmt->bind_param("ssss", $ro['email'], $ro['name'], $ro['subject'], $ro['prompt']);
-        $stmt->execute();
-        $j++;
+    // Validate data
+    if (empty($emails) || empty($subject) || empty($message)) {
+        echo json_encode(['status' => 'error', 'message' => 'All fields are required.']);
+        exit;
     }
 
-    if ($i == $j) {
-        echo json_encode(['status' => 'success', 'message' => 'Email Send Successfully']);
+    // Split emails by comma and trim whitespace
+    $emailArray = array_map('trim', explode(',', $emails));
+
+    // Email sending logic
+    $errors = [];
+    foreach ($emailArray as $email) {
+        if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $mailSent = sendEmail($email, '', $subject, $message, '');
+            if (!$mailSent) {
+                $errors[] = $email;
+            }
+        } else {
+            $errors[] = $email;
+        }
+    }
+
+    // Prepare response
+    if (empty($errors)) {
+        echo json_encode(['status' => 'success', 'message' => 'Emails sent successfully.']);
+    } else {
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Failed to send emails to some recipients.',
+            'failed_emails' => $errors
+        ]);
     }
 } else {
-    $stmt = $conn->prepare("delete from mail_save");
-    $stmt->execute();
-    echo json_encode(['status' => 'error', 'message' => 'Failed to send mail']);
+    echo json_encode(['status' => 'error', 'message' => 'Invalid request method.']);
 }
-
-$stmt->close();
