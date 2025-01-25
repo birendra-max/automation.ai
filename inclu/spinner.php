@@ -1,5 +1,3 @@
-<section id="spinner" class="flex justify-center items-center hidden">
-    <div class="flex justify-center items-center">
-        <img src="public/img/loader.gif" alt="Loading..." class="w-10 h-10">
-    </div>
-</section>
+<div class="p-4 hidden" id="spinner">
+    <img src="public/img/loader.gif" alt="Loading..." class="w-12 h-12">
+</div>
