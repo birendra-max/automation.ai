@@ -5,6 +5,7 @@
 <?php
 include 'inclu/hd.php';
 ?>
+
 <section id="dashboard">
     <div class="container mx-auto mt-8 p-6 bg-white rounded-lg shadow-lg">
         <!-- Dashboard Header -->
@@ -113,9 +114,7 @@ include 'inclu/hd.php';
             fetch('getEmalis.php') // Replace with your actual API endpoint
                 .then(response => response.json())
                 .then(data => {
-                    console.log("Fetched data:", data); // Debugging log
-                    emailData = data; // Store data globally
-                    // Apply default sorting before rendering
+                    emailData = data;
                     emailData.sort((a, b) => {
                         return sortOrder.id === 'asc' ? a.id - b.id : b.id - a.id;
                     });
@@ -137,7 +136,7 @@ include 'inclu/hd.php';
         // Render the table
         function renderTable(data) {
             const tableBody = document.getElementById('email-table-body');
-            tableBody.innerHTML = ''; // Clear existing rows
+            tableBody.innerHTML = '';
 
             let totalEmails = emailData.length;
             let sentEmails = emailData.filter(email => email.status === 'Sent').length;
@@ -147,7 +146,6 @@ include 'inclu/hd.php';
                 const row = document.createElement('tr');
                 row.classList.add('border-b', 'border-gray-200', 'hover:bg-gray-50', 'cursor-pointer');
 
-                // Truncate subject to 20 characters
                 let truncatedSubject = truncateToChars(email.subject, 15);
 
                 row.innerHTML = `
@@ -165,7 +163,9 @@ include 'inclu/hd.php';
                 messageRow.innerHTML = `
                 <td colspan="6" class="py-3 px-4 text-sm text-gray-700">
                     <div class="bg-gray-100 p-4 rounded-lg">
-                        <p class="text-gray-800">${email.message}</p>
+                        <h3 class="text-lg font-semibold text-gray-800">Subject: ${email.subject}</h3>
+                        <p class="text-gray-800 mt-2">${email.message}</p>
+                        ${email.images ? `<div class="mt-4"><img src="${email.images}" alt="Email image" class="rounded-lg shadow-md w-full max-w-xs"/></div>` : ''}
                     </div>
                 </td>
             `;
@@ -179,7 +179,7 @@ include 'inclu/hd.php';
             document.getElementById('failed-emails').textContent = failedEmails;
         }
 
-        // Function to truncate subject to a given number of characters (20 characters for the subject field)
+        // Truncate the subject to a given number of characters
         function truncateToChars(text, charLimit) {
             if (text.length <= charLimit) {
                 return text;
@@ -224,7 +224,7 @@ include 'inclu/hd.php';
             renderTable(getPaginatedData());
         }
 
-        // Toggle message row visibility
+        // Toggle the visibility of the message row
         function toggleMessageRow(emailId) {
             const messageRow = document.getElementById(`message-row-${emailId}`);
             messageRow.classList.toggle('hidden');
@@ -241,8 +241,8 @@ include 'inclu/hd.php';
         // Fetch data on page load
         document.addEventListener('DOMContentLoaded', fetchEmailData);
     </script>
-
 </section>
+
 
 <?php
 include 'inclu/footer.php';
