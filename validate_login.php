@@ -55,14 +55,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 echo "<script>
                     const userDetails = " . json_encode($_SESSION['user_details']) . ";
                     localStorage.setItem('userDetails', JSON.stringify(userDetails));
+                    window.location.href = 'dashboard.php'; // Redirect to the dashboard
                 </script>";
 
-                if ($user['role'] == 'admin') {
-                    header('Location:dashboard.php');
+                if ($user['role'] = 'admin') {
+                    echo "<script>
+                    const userDetails = " . json_encode($_SESSION['user_details']) . ";
+                    localStorage.setItem('userDetails', JSON.stringify(userDetails));
+                    window.location.href = 'dashboard.php'; // Redirect to the dashboard
+                </script>";
                 } else {
-                    header('Location:mailai.php');
+                    echo "<script>
+                    const userDetails = " . json_encode($_SESSION['user_details']) . ";
+                    localStorage.setItem('userDetails', JSON.stringify(userDetails));
+                    window.location.href = 'mailai.php'; // Redirect to the dashboard
+                </script>";
                 }
-
                 exit;
             } else {
                 $_SESSION['error'] = 'There was an issue updating your login information.';
