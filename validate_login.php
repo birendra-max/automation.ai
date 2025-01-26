@@ -51,14 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $stmt->bind_param("ssssss", $_POST['email'], $uniqueId, $login_date, $login_time, $ip_address, $user_agent);
                 $stmt->execute();
 
-                // After successful login, pass the session data to JavaScript
-                echo "<script>
-                    const userDetails = " . json_encode($_SESSION['user_details']) . ";
-                    localStorage.setItem('userDetails', JSON.stringify(userDetails));
-                    window.location.href = 'dashboard.php'; // Redirect to the dashboard
-                </script>";
-
-                if ($user['role'] = 'admin') {
+                if ($user['role'] == 'admin') {
                     echo "<script>
                     const userDetails = " . json_encode($_SESSION['user_details']) . ";
                     localStorage.setItem('userDetails', JSON.stringify(userDetails));
