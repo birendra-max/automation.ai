@@ -20,6 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
+
     $emailArray = array_map('trim', explode(',', $emails));
 
     $totalEmails = count($emailArray);
@@ -27,11 +28,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $failedCount = 0;
     $errors = [];
 
-    $currentTime = date('Y-m-d h:i:s A'); // Modified to include AM/PM
+    $currentTime = date('Y-m-d h:i:s A');
+
+    $mailSent = sendEmail($emailArray, $subject, $message, '');
 
     foreach ($emailArray as $email) {
         if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $mailSent = sendEmail($email, '', $subject, $message, '');
             if ($mailSent) {
                 $stmt = $conn->prepare("INSERT INTO sent_emails (email, subject, message, date_sent) VALUES (?, ?, ?, ?)");
                 $stmt->bind_param("ssss", $email, $subject, $message, $currentTime);
