@@ -1,3 +1,4 @@
+
 </main>
 </div>
 </div>
@@ -18,19 +19,18 @@
 <script>
     let title = document.title;
     if (title == 'Dashboard | AI') {
-        document.getElementById('home').classList.add('bg-gray-700');
-    }
-    else{
-        document.getElementById('home').classList.remove('bg-gray-700');
+        document.getElementById('dashboard').classList.add('bg-gray-700');
+    } else {
+        document.getElementById('dashboard').classList.remove('bg-gray-700');
     }
 
     if (title == 'Mail Automation | AI') {
         document.getElementById('mailai').classList.add('bg-gray-700');
-    }
-    else{
+    } else {
         document.getElementById('mailai').classList.remove('bg-gray-700');
     }
 </script>
+
 </body>
 
 </html>

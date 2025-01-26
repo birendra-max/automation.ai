@@ -1,251 +1,99 @@
-<script>
-    document.title = 'Dashboard | AI'
-</script>
-
-<?php
-include 'inclu/hd.php';
-?>
-
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="public/js/jQuery.js"></script>
+<?php session_start(); ?>
 <section>
-    <div class="container mx-auto mt-8 p-6 bg-white rounded-lg shadow-lg">
-        <!-- Dashboard Header -->
-        <div class="text-center mb-8">
-            <h1 class="text-4xl font-semibold text-gray-800">Email Dashboard</h1>
-            <p class="text-lg text-gray-600">Monitor email sending statistics and track email status</p>
-        </div>
-
-        <!-- Dashboard Metrics Section -->
-        <div class="grid md:grid-cols-3 gap-6">
-            <div class="bg-blue-100 p-6 rounded-lg shadow-md">
-                <div class="text-lg font-medium text-gray-700">Total Emails</div>
-                <div class="text-4xl font-bold text-gray-900" id="total-emails">0</div>
-            </div>
-            <div class="bg-green-100 p-6 rounded-lg shadow-md">
-                <div class="text-lg font-medium text-gray-700">Sent Emails</div>
-                <div class="text-4xl font-bold text-green-600" id="sent-emails">0</div>
-            </div>
-            <div class="bg-red-100 p-6 rounded-lg shadow-md">
-                <div class="text-lg font-medium text-gray-700">Failed Emails</div>
-                <div class="text-4xl font-bold text-red-600" id="failed-emails">0</div>
-            </div>
-        </div>
-
-        <!-- Emails Table Section -->
-        <div class="mt-10">
-            <div class="bg-white p-6 rounded-lg shadow-md">
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-2xl font-semibold text-gray-800">Email Send History</h2>
+    <div class="font-[sans-serif] bg-white flex items-center justify-center md:h-screen p-4">
+        <div class="shadow-[0_2px_16px_-3px_rgba(6,81,237,0.3)] max-w-6xl max-md:max-w-lg rounded-md p-6">
+            <a href="javascript:void(0)" class="flex items-center space-x-4">
+                <!-- Logo Image -->
+                <img
+                    src="https://sevaa.com/app/uploads/2019/04/ft-img-email.png"
+                    alt="Mail Automation Logo"
+                    class="w-36 md:w-40 lg:w-48 rounded-lg shadow-lg" />
+                <!-- Text Container -->
+                <div>
+                    <h3 class="text-3xl md:text-3xl font-semibold text-blue-600 mt-2 mb-2">
+                        Mail Automation.Ai
+                    </h3>
+                    <p class="text-lg text-gray-600 max-w-xs">Streamline your email marketing and automation with ease.</p>
                 </div>
-                <!-- Records per Page Dropdown -->
-                <div class="mt-4 mb-6">
-                    <label for="records-per-page" class="text-lg text-gray-700">Filter : </label>
-                    <select id="records-per-page" class="ml-2 px-3 py-2 text-sm text-gray-700 bg-gray-100 rounded-lg" onchange="changeRowsPerPage(event)">
-                        <option value="10">10</option>
-                        <option value="25">25</option>
-                        <option value="50">50</option>
-                        <option value="100">100</option>
-                    </select>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full table-auto bg-white border border-gray-200 rounded-lg shadow-sm">
-                        <thead class="bg-indigo-50">
-                            <tr>
-                                <th class="py-3 px-4 text-left text-sm font-medium text-gray-600 cursor-pointer" onclick="sortTable('id')">
-                                    ID <span id="sort-id" class="inline-block ml-2">▲</span>
-                                </th>
-                                <th class="py-3 px-4 text-left text-sm font-medium text-gray-600">Email</th>
-                                <th class="py-3 px-4 text-left text-sm font-medium text-gray-600">Subject</th>
-                                <th class="py-3 px-4 text-left text-sm font-medium text-gray-600">Status</th>
-                                <th class="py-3 px-4 text-left text-sm font-medium text-gray-600 cursor-pointer" onclick="sortTable('date')">
-                                    Date <span id="sort-date" class="inline-block ml-2">▲</span>
-                                </th>
-                                <th class="py-3 px-4 text-left text-sm font-medium text-gray-600">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="email-table-body">
-                            <!-- Dynamically populated table rows -->
-                        </tbody>
-                    </table>
+            </a>
+
+
+            <div class="grid md:grid-cols-2 items-center gap-8">
+                <div class="max-md:order-1">
+                    <img src="https://readymadeui.com/signin-image.webp" class="w-full aspect-[12/11] object-contain" alt="login-image" />
                 </div>
 
-                <div class="w-full h-[10vh] flex justify-end items-center mt-6">
-                    <div class="flex items-center space-x-4 bg-white border border-gray-200 shadow-sm px-4 py-2 rounded-lg">
-                        <button
-                            class="flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 disabled:opacity-50"
-                            id="prev-btn"
-                            onclick="changePage('prev')"
-                            disabled>
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
-                            </svg>
-                            Previous
-                        </button>
-                        <div class="text-sm font-medium text-gray-600">
-                            Page <span id="current-page" class="font-bold text-gray-800">1</span> of <span id="total-pages" class="font-bold text-gray-800">1</span>
-                        </div>
-                        <button
-                            class="flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 disabled:opacity-50"
-                            id="next-btn"
-                            onclick="changePage('next')"
-                            disabled>
-                            Next
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-                            </svg>
-                        </button>
+                <form action="validate_login.php" method="post" class="md:max-w-md w-full mx-auto" id="loginform">
+                    <div class="text-xl text-red-500 font-bold text-center" id="errormsg">
+                        <p><?php if (isset($_SESSION['error'])) {
+                                echo $_SESSION['error'];
+                            } ?></p>
                     </div>
-                </div>
+                    <div class="mb-12">
+                        <h3 class="text-4xl font-bold text-blue-600">Sign in</h3>
+                    </div>
 
+                    <div>
+                        <div class="relative flex items-center">
+                            <input name="email" type="text" required class="w-full text-sm border-b border-gray-300 focus:border-blue-600 px-2 py-3 outline-none" placeholder="Enter email" />
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="#bbb" stroke="#bbb" class="w-[18px] h-[18px] absolute right-2" viewBox="0 0 682.667 682.667">
+                                <defs>
+                                    <clipPath id="a" clipPathUnits="userSpaceOnUse">
+                                        <path d="M0 512h512V0H0Z" data-original="#000000"></path>
+                                    </clipPath>
+                                </defs>
+                                <g clip-path="url(#a)" transform="matrix(1.33 0 0 -1.33 0 682.667)">
+                                    <path fill="none" stroke-miterlimit="10" stroke-width="40" d="M452 444H60c-22.091 0-40-17.909-40-40v-39.446l212.127-157.782c14.17-10.54 33.576-10.54 47.746 0L492 364.554V404c0 22.091-17.909 40-40 40Z" data-original="#000000"></path>
+                                    <path d="M472 274.9V107.999c0-11.027-8.972-20-20-20H60c-11.028 0-20 8.973-20 20V274.9L0 304.652V107.999c0-33.084 26.916-60 60-60h392c33.084 0 60 26.916 60 60v196.653Z" data-original="#000000"></path>
+                                </g>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="mt-8">
+                        <div class="relative flex items-center">
+                            <input name="password" type="password" required class="w-full text-sm border-b border-gray-300 focus:border-blue-600 px-2 py-3 outline-none" placeholder="Enter password" />
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="#bbb" stroke="#bbb" class="w-[18px] h-[18px] absolute right-2 cursor-pointer" viewBox="0 0 128 128">
+                                <path d="M64 104C22.127 104 1.367 67.496.504 65.943a4 4 0 0 1 0-3.887C1.367 60.504 22.127 24 64 24s62.633 36.504 63.496 38.057a4 4 0 0 1 0 3.887C126.633 67.496 105.873 104 64 104zM8.707 63.994C13.465 71.205 32.146 96 64 96c31.955 0 50.553-24.775 55.293-31.994C114.535 56.795 95.854 32 64 32 32.045 32 13.447 56.775 8.707 63.994zM64 88c-13.234 0-24-10.766-24-24s10.766-24 24-24 24 10.766 24 24-10.766 24-24 24zm0-40c-8.822 0-16 7.178-16 16s7.178 16 16 16 16-7.178 16-16-7.178-16-16-16z" data-original="#000000"></path>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap items-center justify-between gap-4 mt-6">
+                        <div class="flex items-center">
+                            <input id="remember-me" name="remember-me" type="checkbox" class="h-4 w-4 shrink-0 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
+                            <label for="remember-me" class="text-gray-800 ml-3 block text-sm">
+                                Remember me
+                            </label>
+                        </div>
+                        <div>
+                            <a href="jajvascript:void(0);" class="text-blue-600 font-semibold text-sm hover:underline">
+                                Forgot Password?
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="mt-12">
+                        <?php
+                        include 'inclu/spinner.php'
+                        ?>
+                        <button type="submit" id="login" class="w-full shadow-xl py-2.5 px-4 text-sm font-semibold tracking-wide rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none">
+                            Sign in
+                        </button>
+                        <!-- <p class="text-gray-800 text-sm text-center mt-6">Don't have an account <a href="javascript:void(0);" class="text-blue-600 font-semibold hover:underline ml-1 whitespace-nowrap">Register here</a></p> -->
+                    </div>
+                </form>
             </div>
         </div>
     </div>
-
-    <script>
-        let emailData = []; // Store fetched data here
-        let currentPage = 1;
-        let rowsPerPage = 10; // Default number of rows per page
-        let sortOrder = {
-            id: 'asc',
-            date: 'asc'
-        }; // Sort order tracking
-
-        // Fetch email data from the PHP endpoint
-        function fetchEmailData() {
-            fetch('getEmalis.php') // Replace with your actual API endpoint
-                .then(response => response.json())
-                .then(data => {
-                    console.log("Fetched data:", data); // Debugging log
-                    emailData = data; // Store data globally
-                    // Apply default sorting before rendering
-                    emailData.sort((a, b) => {
-                        return sortOrder.id === 'asc' ? a.id - b.id : b.id - a.id;
-                    });
-                    renderTable(getPaginatedData());
-                    updatePagination();
-                })
-                .catch(error => {
-                    console.error('Error fetching email data:', error);
-                });
-        }
-
-        // Get paginated data for the current page
-        function getPaginatedData() {
-            const startIndex = (currentPage - 1) * rowsPerPage;
-            const endIndex = startIndex + rowsPerPage;
-            return emailData.slice(startIndex, endIndex);
-        }
-
-        // Render the table
-        function renderTable(data) {
-            const tableBody = document.getElementById('email-table-body');
-            tableBody.innerHTML = ''; // Clear existing rows
-
-            let totalEmails = emailData.length;
-            let sentEmails = emailData.filter(email => email.status === 'Sent').length;
-            let failedEmails = emailData.filter(email => email.status === 'Failed').length;
-
-            data.forEach(email => {
-                const row = document.createElement('tr');
-                row.classList.add('border-b', 'border-gray-200', 'hover:bg-gray-50', 'cursor-pointer');
-
-                // Truncate subject to 20 characters
-                let truncatedSubject = truncateToChars(email.subject, 15);
-
-                row.innerHTML = `
-                <td class="py-3 px-4 text-sm text-gray-700">${email.id}</td>
-                <td class="py-3 px-4 text-sm text-gray-700">${email.email}</td>
-                <td class="py-3 px-4 text-sm text-gray-700">${truncatedSubject}</td>
-                <td class="py-3 px-4 text-sm text-${email.status.toLowerCase() === 'sent' ? 'green' : email.status.toLowerCase() === 'failed' ? 'red' : 'orange'}-600 font-semibold">${email.status}</td>
-                <td class="py-3 px-4 text-sm text-gray-700">${email.date}</td>
-                <td class="py-3 px-4 text-sm text-blue-600 cursor-pointer" onclick="toggleMessageRow(${email.id})">View Message</td>
-            `;
-
-                const messageRow = document.createElement('tr');
-                messageRow.classList.add('hidden');
-                messageRow.id = `message-row-${email.id}`;
-                messageRow.innerHTML = `
-                <td colspan="6" class="py-3 px-4 text-sm text-gray-700">
-                    <div class="bg-gray-100 p-4 rounded-lg">
-                        <p class="text-gray-800">${email.message}</p>
-                    </div>
-                </td>
-            `;
-
-                tableBody.appendChild(row);
-                tableBody.appendChild(messageRow);
-            });
-
-            document.getElementById('total-emails').textContent = totalEmails;
-            document.getElementById('sent-emails').textContent = sentEmails;
-            document.getElementById('failed-emails').textContent = failedEmails;
-        }
-
-        // Function to truncate subject to a given number of characters (20 characters for the subject field)
-        function truncateToChars(text, charLimit) {
-            if (text.length <= charLimit) {
-                return text;
-            }
-            return text.slice(0, charLimit) + '...';
-        }
-
-        // Update pagination controls
-        function updatePagination() {
-            const totalPages = Math.ceil(emailData.length / rowsPerPage);
-            document.getElementById('current-page').textContent = currentPage;
-            document.getElementById('total-pages').textContent = totalPages;
-
-            document.getElementById('prev-btn').disabled = currentPage === 1;
-            document.getElementById('next-btn').disabled = currentPage === totalPages;
-        }
-
-        // Handle page changes
-        function changePage(direction) {
-            if (direction === 'prev' && currentPage > 1) {
-                currentPage--;
-            } else if (direction === 'next' && currentPage < Math.ceil(emailData.length / rowsPerPage)) {
-                currentPage++;
-            }
-            renderTable(getPaginatedData());
-            updatePagination();
-        }
-
-        // Sort the table
-        function sortTable(column) {
-            sortOrder[column] = sortOrder[column] === 'asc' ? 'desc' : 'asc';
-
-            emailData.sort((a, b) => {
-                if (column === 'id') {
-                    return sortOrder[column] === 'asc' ? a.id - b.id : b.id - a.id;
-                } else if (column === 'date') {
-                    return sortOrder[column] === 'asc' ? new Date(a.date) - new Date(b.date) : new Date(b.date) - new Date(a.date);
-                }
-            });
-
-            document.getElementById(`sort-${column}`).textContent = sortOrder[column] === 'asc' ? '▲' : '▼';
-            renderTable(getPaginatedData());
-        }
-
-        // Toggle message row visibility
-        function toggleMessageRow(emailId) {
-            const messageRow = document.getElementById(`message-row-${emailId}`);
-            messageRow.classList.toggle('hidden');
-        }
-
-        // Handle rows per page change
-        function changeRowsPerPage(event) {
-            rowsPerPage = parseInt(event.target.value, 10);
-            currentPage = 1; // Reset to the first page
-            renderTable(getPaginatedData());
-            updatePagination();
-        }
-
-        // Fetch data on page load
-        document.addEventListener('DOMContentLoaded', fetchEmailData);
-    </script>
-
 </section>
 
-
-<?php
-include 'inclu/footer.php';
-?>
+<script>
+    $(document).ready(function() {
+        setInterval(function() {
+            $('#errormsg').hide();
+        }, 5000)
+    })
+</script>

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+<?php session_start(); ?>
 
 <head>
     <meta charset="UTF-8">
@@ -35,22 +36,39 @@
             </div>
             <div class="flex flex-col flex-1 overflow-y-auto">
                 <nav class="flex-1 px-2 py-4 bg-slate-950">
-                    <a href="index.php" class="flex items-center px-4 py-2 text-gray-100 hover:bg-gray-700" id="home">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h18v18H3z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h10M7 12h10M7 17h10" />
-                        </svg>
-                        Dashboard
-                    </a>
-                    <a href="mailai.php" class="flex items-center px-4 py-2 text-gray-100 hover:bg-gray-700" id="mailai">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.5 5L18 8M21 12V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-6" />
-                        </svg>
-                        Mail Automation | AI
-                    </a>
+                    <?php
+                    if (isset($_SESSION['user_details'])) {
+                    ?>
+                        <a href="dashboard.php" class="flex items-center px-4 py-2 text-gray-100 hover:bg-gray-700" id="dashboard">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h18v18H3z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h10M7 12h10M7 17h10" />
+                            </svg>
+                            Dashboard
+                        </a>
+                        <a href="mailai.php" class="flex items-center px-4 py-2 text-gray-100 hover:bg-gray-700" id="mailai">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.5 5L18 8M21 12V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-6" />
+                            </svg>
+                            Mail Automation | AI
+                        </a>
+                    <?php } else {
+                        header('Location:index.php');
+                    }  ?>
                 </nav>
             </div>
         </div>
+
+        <script>
+            $(document).ready(function() {
+                let userData = JSON.parse(localStorage.getItem('userDetails'));
+                if (userData.role = 'user') {
+                    $("#dashboard").hide();
+                } else {
+                    $("#dashboard").hide();
+                }
+            })
+        </script>
 
         <!-- Main Content -->
         <div class="flex flex-col flex-1 overflow-y-auto w-full bg-gradient-to-r from-blue-50 via-indigo-100 to-blue-50">
@@ -80,8 +98,17 @@
                             </svg>
                         </button>
                     </form>
-
                 </div>
+                <a href="logout.php" class="flex items-center text-white bg-red-600 border border-red-600 py-2 px-6 gap-2 rounded-lg inline-flex items-center transition duration-300 ease-in-out hover:bg-red-700 hover:border-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50">
+                    <span>
+                        Logout
+                    </span>
+                    <svg class="w-4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        viewBox="0 0 24 24" class="w-6 h-6 ml-2">
+                        <path d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                    </svg>
+                </a>
+
             </div>
 
             <!-- Main Section -->

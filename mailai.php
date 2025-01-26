@@ -40,7 +40,7 @@ include 'inclu/hd.php';
     }
 </style>
 
-<section class="mt-4">
+<section class="mt-4" id="mailai">
     <div class="max-w-7xl mx-auto bg-white border border-gray-300 shadow-lg rounded-lg p-8">
         <!-- Alert Container -->
         <div id="alert-container" class="fixed top-0 left-1/2 transform -translate-x-1/2 mt-4 z-50">
