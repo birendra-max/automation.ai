@@ -6,39 +6,8 @@
 include 'inclu/hd.php';
 ?>
 
-<link rel="stylesheet" href="https://cdn.ckeditor.com/ckeditor5/44.1.0/ckeditor5.css" crossorigin>
-<link rel="stylesheet" href="https://cdn.ckeditor.com/ckeditor5-premium-features/44.1.0/ckeditor5-premium-features.css" crossorigin>
-
-<style>
-    @import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;1,400;1,700&display=swap');
-
-    @media print {
-        body {
-            margin: 0 !important;
-        }
-    }
-
-    .main-container {
-        font-family: 'Lato';
-        width: fit-content;
-        margin-left: auto;
-        margin-right: auto;
-        width: 100%;
-    }
-
-    .ck-content {
-        font-family: 'Lato';
-        line-height: 1.6;
-        word-break: break-word;
-        width: 100%;
-        min-height: 30%;
-    }
-
-    .editor-container_classic-editor .editor-container__editor {
-        min-width: 100%;
-        max-width: 100%;
-    }
-</style>
+<link rel="stylesheet" href="Third-party\froala_editor_4.4.0\css\froala_editor.pkgd.min.css">
+<script src="Third-party\froala_editor_4.4.0\js\froala_editor.pkgd.min.js"></script>
 
 <section class="mt-4" id="mailai">
     <div class="max-w-7xl mx-auto bg-white border border-gray-300 shadow-lg rounded-lg p-8">
@@ -89,14 +58,19 @@ include 'inclu/hd.php';
                             <label for="subject" class="block text-teal-600 font-medium">Subject</label>
                             <input type="text" id="subject" value="" class="w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500" placeholder="Enter email subject" name="subject" required>
                         </div>
-                        <div class="main-container">
-                            <div class="editor-container editor-container_classic-editor" id="editor-container">
-                                <div class="editor-container__editor">
-                                    <label for="message" class="block text-teal-600 font-medium">Mail Prompt</label>
-                                    <textarea id="editor" name="editor"></textarea>
-                                </div>
-                            </div>
-                        </div>
+                        <textarea id="editor" name="editor" placeholder="">
+                                
+                        </textarea>
+                        <script>
+                            document.addEventListener("DOMContentLoaded", function() {
+                                new FroalaEditor('#editor', {
+                                    toolbarInline: false, // Optional: Use the full toolbar
+                                    pluginsEnabled: ['image', 'file'], // Enable drag-and-drop plugins
+                                    imageUpload: true,
+                                    fileUpload: true
+                                });
+                            });
+                        </script>
                         <div class="w-48">
                             <?php
                             include 'inclu/spinner.php'
@@ -118,11 +92,6 @@ include 'inclu/hd.php';
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
 
-    <script src="https://cdn.ckeditor.com/ckeditor5/44.1.0/ckeditor5.umd.js" crossorigin></script>
-    <script src="https://cdn.ckeditor.com/ckeditor5-premium-features/44.1.0/ckeditor5-premium-features.umd.js"
-        crossorigin></script>
-    <script src="https://cdn.ckbox.io/ckbox/2.6.1/ckbox.js" crossorigin></script>
-    <script src="public/js/main.js"></script>
 
     <script>
         document.getElementById('fileInput').addEventListener('change', function(e) {

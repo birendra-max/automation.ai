@@ -8,9 +8,9 @@
     <title>Automation | AI</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="public/js/jQuery.js"></script>
-    <link rel="stylesheet" href="https://cdn.ckeditor.com/ckeditor5/44.1.0/ckeditor5.css" crossorigin>
-    <link rel="stylesheet" href="https://cdn.ckeditor.com/ckeditor5-premium-features/44.1.0/ckeditor5-premium-features.css" crossorigin>
-
+    <!-- <link rel="stylesheet" href="https://cdn.ckeditor.com/ckeditor5/44.1.0/ckeditor5.css" crossorigin>
+    <link rel="stylesheet" href="https://cdn.ckeditor.com/ckeditor5-premium-features/44.1.0/ckeditor5-premium-features.css" crossorigin> -->
+    <!-- include libraries(jQuery, bootstrap) -->
     <style>
         #editor {
             height: 400px;
