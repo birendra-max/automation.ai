@@ -13,7 +13,7 @@ if ($conn->connect_error) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $emails = $_POST['emailid'] ?? '';
     $subject = $_POST['subject'] ?? '';
-    $message = $_POST['editor'] ?? '';
+    $message = $_POST['emailbody'] ?? '';
 
     if (empty($emails) || empty($subject) || empty($message)) {
         echo json_encode(['status' => 'error', 'message' => 'All fields are required.']);

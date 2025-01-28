@@ -6,8 +6,6 @@
 include 'inclu/hd.php';
 ?>
 
-<link rel="stylesheet" href="Third-party\froala_editor_4.4.0\css\froala_editor.pkgd.min.css">
-<script src="Third-party\froala_editor_4.4.0\js\froala_editor.pkgd.min.js"></script>
 
 <section class="mt-4" id="mailai">
     <div class="max-w-7xl mx-auto bg-white border border-gray-300 shadow-lg rounded-lg p-8">
@@ -61,80 +59,8 @@ include 'inclu/hd.php';
 
                         <div class="container">
                             <h2>Summernote Editor with Drag-and-Drop Attachment</h2>
-                            <textarea id="summernote"></textarea>
+                            <textarea id="summernote" name="emailbody"></textarea>
                         </div>
-
-                        <!-- include summernote css/js -->
-                        <link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote.min.css" rel="stylesheet">
-                        <script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote.min.js"></script>
-
-                        <script>
-                            $(document).ready(function() {
-                                $('#summernote').summernote({
-                                    height: 300, // Set the height of the editor
-                                    callbacks: {
-                                        onImageUpload: function(files) {
-                                            uploadFile(files);
-                                        },
-                                        onFileDrop: function(event, files) {
-                                            uploadFile(files);
-                                        }
-                                    }
-                                });
-                            });
-
-                            function uploadFile(files) {
-                                var formData = new FormData();
-                                formData.append('file', files[0]);
-
-                                $.ajax({
-                                    url: 'fileUpload.php', // PHP upload script URL
-                                    type: 'POST',
-                                    data: formData,
-                                    contentType: false,
-                                    processData: false,
-                                    success: function(response) {
-                                        var data = JSON.parse(response); // Parse the JSON response from PHP
-                                        if (data.fileUrl) {
-                                            insertFile(data.fileUrl, files[0]); // Insert the file into the editor
-                                        } else {
-                                            alert('File upload failed');
-                                        }
-                                    },
-                                    error: function(xhr, status, error) {
-                                        console.error('File upload failed:', error);
-                                    }
-                                });
-                            }
-
-                            function insertFile(fileUrl, file) {
-                                // Get the full URL
-                                var baseUrl = window.location.origin; // Will get "http://localhost"
-                                var fullUrl = baseUrl + '/automation.ai/' + fileUrl; // Complete file URL
-
-                                if (file.type.startsWith('image/')) {
-                                    // Insert image if it's an image file
-                                    var image = document.createElement('img');
-                                    image.src = fullUrl;
-                                    image.classList.add('img-fluid');
-                                    image.alt = 'Uploaded Image';
-
-                                    // Insert the image node
-                                    $('#summernote').summernote('insertNode', image);
-                                } else {
-                                    // Insert link if it's a non-image file
-                                    var fileLink = document.createElement('a');
-                                    fileLink.href = fullUrl;
-                                    fileLink.target = '_blank';
-                                    fileLink.classList.add('file-attachment');
-                                    fileLink.textContent = file.name; // The file's name will be the link text
-
-                                    // Insert the link node
-                                    $('#summernote').summernote('insertNode', fileLink);
-                                }
-                            }
-                        </script>
-
 
                         <div class="w-48">
                             <?php
@@ -157,6 +83,9 @@ include 'inclu/hd.php';
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
 
+    <!-- Summernote -->
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.js"></script>
 
     <script>
         document.getElementById('fileInput').addEventListener('change', function(e) {
@@ -195,6 +124,87 @@ include 'inclu/hd.php';
 
 
         $(document).ready(function() {
+            // Initialize Summernote
+            $('#summernote').summernote({
+                placeholder: 'Write your email body here...',
+                tabsize: 2,
+                height: 200,
+                toolbar: [
+                    ['style', ['style']],
+                    ['font', ['bold', 'italic', 'underline', 'clear']],
+                    ['color', ['color']],
+                    ['para', ['ul', 'ol', 'paragraph']],
+                    ['insert', ['link', 'picture', 'video']],
+                    ['view', ['fullscreen', 'codeview', 'help']],
+                ],
+                callbacks: {
+                    // Callback to handle file drop
+                    onFileDrop: function(event, files) {
+                        uploadFile(files[0]); // Handle single file drop
+                    },
+                    // Optional: Callback to handle image upload via toolbar
+                    onImageUpload: function(files) {
+                        uploadFile(files[0]);
+                    },
+                },
+            });
+
+            // Upload File Function
+            function uploadFile(file) {
+                var formData = new FormData();
+                formData.append('file', file);
+
+                $.ajax({
+                    url: 'fileUpload.php', // PHP script to handle file upload
+                    type: 'POST',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function(response) {
+                        try {
+                            var data = JSON.parse(response); // Parse JSON response
+                            if (data.fileUrl) {
+                                insertFile(data.fileUrl, file); // Insert uploaded file
+                            } else {
+                                alert('File upload failed');
+                            }
+                        } catch (error) {
+                            console.error('Invalid JSON response:', response);
+                            alert('An error occurred during file upload.');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('File upload failed:', error);
+                        alert('Failed to upload file.');
+                    },
+                });
+            }
+
+            // Insert File Function
+            function insertFile(fileUrl, file) {
+                var baseUrl = window.location.origin; // Get base URL
+                var fullUrl = baseUrl + '/emailediter/' + fileUrl; // Construct full URL
+
+                if (file.type.startsWith('image/')) {
+                    // Handle image insertion
+                    var image = document.createElement('img');
+                    image.src = fullUrl;
+                    image.classList.add('img-fluid');
+                    image.alt = 'Uploaded Image';
+                    $('#summernote').summernote('insertNode', image);
+                } else {
+                    // Handle non-image file insertion
+                    var fileLink = document.createElement('a');
+                    fileLink.href = fullUrl;
+                    fileLink.target = '_blank';
+                    fileLink.classList.add('file-attachment');
+                    fileLink.textContent = file.name;
+                    $('#summernote').summernote('insertNode', fileLink);
+                }
+            }
+
+            // summernote editer end 
+
             const alertMessage = localStorage.getItem('alertMessage');
             const alertType = localStorage.getItem('alertType');
 
