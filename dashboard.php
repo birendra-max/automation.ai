@@ -7,7 +7,7 @@ include 'inclu/hd.php';
 ?>
 
 <section id="dashboard">
-    <div class="container mx-auto mt-8 p-6 bg-white rounded-lg shadow-lg">
+    <div class="container mx-auto p-6 bg-white rounded-lg shadow-lg">
         <!-- Dashboard Header -->
         <div class="text-center mb-8">
             <h1 class="text-4xl font-semibold text-gray-800">Email Dashboard</h1>

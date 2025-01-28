@@ -13,8 +13,8 @@ function sendEmail($emails, $subject, $htmlBody, $altBody)
         $mail->isSMTP();
         $mail->Host = 'smtp.hostinger.com';
         $mail->SMTPAuth = true;
-        $mail->Username = 'admin@bravodentdesigns.com';
-        $mail->Password = 'Admin@new@pass@3214';
+        $mail->Username = 'sales@bravodentdesigns.com';
+        $mail->Password = 'Sales@Bravo@2025';
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port = 587;
 
