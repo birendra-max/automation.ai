@@ -58,7 +58,7 @@ include 'inclu/hd.php';
                         </div>
 
                         <div class="container">
-                            <h2>Summernote Editor with Drag-and-Drop Attachment</h2>
+                            <h2 class="block text-teal-600 font-medium">Email Body</h2>
                             <textarea id="summernote" name="emailbody"></textarea>
                         </div>
 
@@ -124,6 +124,7 @@ include 'inclu/hd.php';
 
 
         $(document).ready(function() {
+
             // Initialize Summernote
             $('#summernote').summernote({
                 placeholder: 'Write your email body here...',
@@ -182,18 +183,16 @@ include 'inclu/hd.php';
 
             // Insert File Function
             function insertFile(fileUrl, file) {
-                var baseUrl = window.location.origin; // Get base URL
-                var fullUrl = baseUrl + '/emailediter/' + fileUrl; // Construct full URL
+                var baseUrl = window.location.origin;
+                var fullUrl = baseUrl + '/automation.ai/' + fileUrl;
 
                 if (file.type.startsWith('image/')) {
-                    // Handle image insertion
                     var image = document.createElement('img');
                     image.src = fullUrl;
                     image.classList.add('img-fluid');
                     image.alt = 'Uploaded Image';
                     $('#summernote').summernote('insertNode', image);
                 } else {
-                    // Handle non-image file insertion
                     var fileLink = document.createElement('a');
                     fileLink.href = fullUrl;
                     fileLink.target = '_blank';
