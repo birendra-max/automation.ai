@@ -8,12 +8,12 @@ include 'inclu/hd.php';
 
 
 <section id="mailai">
-    <div class="max-w-7xl mx-auto bg-white border border-gray-300 shadow-lg rounded-lg p-8">
+    <div class="w-full mx-auto bg-white border border-gray-300 shadow-lg rounded-lg p-8">
         <!-- Alert Container -->
         <div id="alert-container" class="fixed top-0 left-1/2 transform -translate-x-1/2 mt-4 z-50">
-            <div id="alert" class="bg-green-500 text-white text-center p-4 rounded-lg shadow-lg max-w-[100%] ml-62 mx-auto ">
+            <div id="alert" class="bg-green-500 text-white text-center p-4 rounded-lg shadow-lg w-full ml-[25%] mx-auto hidden">
                 <div class="flex items-center justify-center w-full">
-                    <span id="alert-message" class="font-medium w-full">Tanks , Regress Tanks , Regress Tanks , Regress Tanks , Regress Tanks</span>
+                    <span id="alert-message" class="font-medium w-full"></span>
                     <button onclick="closeAlert()" class="ml-4 text-white">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -233,6 +233,8 @@ include 'inclu/hd.php';
                         $("#spinner").css('display', 'none');
                         $("#sendmail").css('display', 'block');
 
+                        location.reload();
+
                         if (response.status === 'success') {
                             const message = `Your email was sent successfully! Total Emails: ${response.total_emails} | Success Emails: ${response.sent_emails}`;
                             showAlert(message, "success");
@@ -244,8 +246,6 @@ include 'inclu/hd.php';
                             localStorage.setItem('alertMessage', message);
                             localStorage.setItem('alertType', 'error');
                         }
-
-                        location.reload();
                     },
                     error: function(xhr, status, error) {
                         $("#spinner").css('display', 'none');
