@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     foreach ($emailArray as $email) {
         if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
             if ($mailSent) {
-                $stmt = $conn->prepare("INSERT INTO sent_emails (email, subject, message, date_sent) VALUES (?, ?, ?, ?)");
+                $stmt = $conn->prepare("INSERT INTO successful_emails (email, subject, message, date_sent) VALUES (?, ?, ?, ?)");
                 $stmt->bind_param("ssss", $email, $subject, $message, $currentTime);
                 if (!$stmt->execute()) {
                     $errors[] = $email . ' (DB Error: ' . $stmt->error . ')';
@@ -45,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } else {
                 $failedCount++;
                 $errors[] = $email;
-                $stmt = $conn->prepare("INSERT INTO failed_emails (email, subject, message, error_message, date_failed) VALUES (?, ?, ?, ?, ?)");
+                $stmt = $conn->prepare("INSERT INTO failed_emails (email, subject, message, error_message, date_sent) VALUES (?, ?, ?, ?, ?)");
                 $stmt->bind_param("sssss", $email, $subject, $message, 'Mail sending failed', $currentTime);
                 if (!$stmt->execute()) {
                     $errors[] = $email . ' (DB Error: ' . $stmt->error . ')';
