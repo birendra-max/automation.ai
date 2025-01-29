@@ -8,10 +8,7 @@ if ($conn->connect_error) {
 
 // Updated query to ensure both SELECT statements have the same columns and structure
 $query = "
-    SELECT id, email, subject, message, 'Sent' AS status, date_sent AS date FROM sent_emails
-    UNION ALL
-    SELECT id, email, subject, message, 'Failed' AS status, date_failed AS date FROM failed_emails
-    ORDER BY date DESC
+    SELECT id, email, subject, message, 'Sent' AS status, date_sent AS date FROM successful_emails
 ";
 
 $result = $conn->query($query);
