@@ -39,32 +39,38 @@
 </head>
 
 <body>
-    <div class="flex h-screen antialiased">
+    <div class="flex h-screen antialiased bg-gray-800">
         <!-- Sidebar -->
-        <div id="sidebar" class="hidden md:flex flex-col w-64 bg-slate-950">
-            <div class="flex items-center justify-center h-16 bg-slate-950">
-                <span class="text-white font-bold uppercase">AutomationAI.com </span>
+        <div id="sidebar" class="hidden md:flex flex-col w-64 bg-gray-800">
+            <div class="flex items-center justify-center h-16 bg-gray-800 border-b border-gray-200">
+                <span class="text-white text-xl font-bold uppercase">AutomationAI.com </span>
             </div>
             <div class="flex flex-col flex-1 overflow-y-auto">
-                <nav class="flex-1 px-2 py-4 bg-slate-950">
+                <nav class="flex-1 px-2 py-4 bg-gray-800">
                     <?php
 
                     if (isset($_SESSION['user_details'])) {
                         if ($_SESSION['user_details']['role'] == 'admin') {
                             // Admin menu options
                     ?>
-                            <a href="dashboard.php" class="flex items-center px-4 py-2 text-gray-100 hover:bg-gray-700" id="dashboard">
+                            <a href="dashboard.php" class="flex items-center text-white px-6 py-3 hover:bg-gray-700" id="dashboard">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h18v18H3z" />
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h10M7 12h10M7 17h10" />
                                 </svg>
                                 Dashboard
                             </a>
-                            <a href="mailai.php" class="flex items-center px-4 py-2 text-gray-100 hover:bg-gray-700" id="mailai">
+                            <a href="mailai.php" class="flex items-center text-white px-6 py-3 hover:bg-gray-700" id="mailai">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.5 5L18 8M21 12V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-6" />
                                 </svg>
                                 Mail Automation | AI
+                            </a>
+                            <a href="inbox.php" class="flex items-center text-white px-6 py-3 hover:bg-gray-700" id="inbox">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.5 5L18 8M21 12V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-6" />
+                                </svg>
+                                Inbox | AI
                             </a>
                         <?php
                         } elseif ($_SESSION['user_details']['role'] == 'user') {
@@ -92,7 +98,7 @@
         <!-- Main Content -->
         <div class="flex flex-col flex-1 overflow-y-auto w-full bg-gradient-to-r from-blue-50 via-indigo-100 to-blue-50">
             <!-- Top Bar -->
-            <div class="flex items-center justify-between h-16 bg-white border-b border-gray-200 p-4">
+            <div class="flex items-center justify-between h-16 bg-gray-100 border-b border-gray-200 p-4">
                 <div class="flex items-center px-4">
                     <!-- Hamburger Menu for Sidebar Toggle -->
                     <button onclick="toggleSidebar()" class="text-gray-500 focus:outline-none focus:text-gray-700 md:hidden">
