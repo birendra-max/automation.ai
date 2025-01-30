@@ -18,7 +18,7 @@ function sendEmail($emails, $subject, $htmlBody, $altBody)
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port = 587;
 
-        $mail->setFrom('admin@bravodentdesigns.com', 'BravoDent Design Admin'); 
+        $mail->setFrom('sales@bravodentdesigns.com', 'BravoDent Design Sales'); 
 
         foreach ($emails as $email) {
             if (filter_var($email, FILTER_VALIDATE_EMAIL)) {

@@ -59,7 +59,7 @@ include 'inclu/hd.php';
                                 <th class="py-3 px-4 text-left text-sm font-medium text-gray-600 cursor-pointer" onclick="sortTable('date')">
                                     Date <span id="sort-date" class="inline-block ml-2">▲</span>
                                 </th>
-                                <th class="py-3 px-4 text-left text-sm font-medium text-gray-600">Action</th>
+                                <th class="py-3 px-4 text-left text-sm font-medium text-gray-600">Notification</th>
                             </tr>
                         </thead>
                         <tbody id="email-table-body">
@@ -154,7 +154,20 @@ include 'inclu/hd.php';
                 <td class="py-3 px-4 text-sm text-gray-700">${truncatedSubject}</td>
                 <td class="py-3 px-4 text-sm text-${email.status.toLowerCase() === 'sent' ? 'green' : email.status.toLowerCase() === 'failed' ? 'red' : 'orange'}-600 font-semibold">${email.status}</td>
                 <td class="py-3 px-4 text-sm text-gray-700">${email.date}</td>
-                <td class="py-3 px-4 text-sm text-blue-600 cursor-pointer" onclick="toggleMessageRow(${email.id})">View Message</td>
+                <td class="py-3 px-4 text-sm">
+                    <button class="py-4 px-1 relative border-2 border-transparent text-gray-800 rounded-full hover:text-gray-400 focus:outline-none focus:text-gray-500 transition duration-150 ease-in-out" aria-label="Mail" onclick="toggleMessageRow(${email.id},'${email.email}')">
+                        <svg class="h-6 w-6" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
+                            <path d="M3 5h18l-9 7-9-7z"></path>
+                            <path d="M3 5v14h18V5"></path>
+                        </svg>
+                        <span class="absolute inset-0 object-right-top -mr-6">
+                            <div class="inline-flex items-center px-1.5 py-0.5 border-2 border-white rounded-full text-xs font-semibold leading-4 bg-red-500 text-white">
+                            6
+                            </div>
+                        </span>
+                    </button>
+
+                </td>
             `;
 
                 const messageRow = document.createElement('tr');
@@ -225,8 +238,9 @@ include 'inclu/hd.php';
         }
 
         // Toggle the visibility of the message row
-        function toggleMessageRow(emailId) {
+        function toggleMessageRow(emailId, email) {
             const messageRow = document.getElementById(`message-row-${emailId}`);
+            console.log(email);
             messageRow.classList.toggle('hidden');
         }
 
@@ -236,6 +250,10 @@ include 'inclu/hd.php';
             currentPage = 1; // Reset to the first page
             renderTable(getPaginatedData());
             updatePagination();
+        }
+
+        function sendNotification(emailid) {
+            console.log(emailid);
         }
 
         // Fetch data on page load

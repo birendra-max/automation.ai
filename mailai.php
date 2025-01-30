@@ -246,7 +246,7 @@ include 'inclu/hd.php';
                             localStorage.setItem('alertType', 'error');
                         }
 
-                        location.reload();
+                        // location.reload();
                     },
                     error: function(xhr, status, error) {
                         $("#spinner").css('display', 'none');
