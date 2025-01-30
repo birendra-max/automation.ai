@@ -10,8 +10,8 @@ include 'inclu/hd.php';
 <section id="mailai">
     <div class="max-w-7xl mx-auto bg-white border border-gray-300 shadow-lg rounded-lg p-8">
         <!-- Alert Container -->
-        <div id="alert-container" class="fixed top-0 left-1/2 transform -translate-x-1/3 mt-4 z-50 w-full max-w-3xl mx-auto hidden">
-            <div id="alert" class="bg-green-500 text-white text-center p-4 rounded-lg shadow-lg w-full">
+        <div id="alert-container" class="fixed top-0 left-1/2 transform -translate-x-1/3 mt-4 z-50 w-full max-w-3xl mx-auto">
+            <div id="alert" class="bg-green-500 text-white text-center p-4 rounded-lg shadow-lg w-full hidden">
                 <div class="flex items-center justify-between">
                     <span id="alert-message" class="font-medium w-full"></span>
                     <button onclick="closeAlert()" class="ml-4 text-white">
@@ -229,10 +229,10 @@ include 'inclu/hd.php';
                     data: formData,
                     dataType: 'json',
                     success: function(response) {
-                        console.log(response);
 
                         $("#spinner").css('display', 'none');
                         $("#sendmail").css('display', 'block');
+                        location.reload();
 
                         if (response.status === 'success') {
                             const message = `Your email was sent successfully! Total Emails: ${response.total_emails} | Success Emails: ${response.sent_emails}`;
@@ -246,7 +246,6 @@ include 'inclu/hd.php';
                             localStorage.setItem('alertType', 'error');
                         }
 
-                        // location.reload();
                     },
                     error: function(xhr, status, error) {
                         $("#spinner").css('display', 'none');
