@@ -1,4 +1,5 @@
 <?php
+
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
@@ -18,7 +19,11 @@ function sendEmail($emails, $subject, $htmlBody, $altBody)
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port = 587;
 
+<<<<<<< HEAD
         $mail->setFrom('sales@bravodentdesigns.com', 'BravoDent Design Sales'); 
+=======
+        $mail->setFrom('sales@bravodentdesigns.com', 'BravoDent Designs Sales');
+>>>>>>> 716e5f61ed08a7f3b8c1112f6968cc831b0e4470
 
         foreach ($emails as $email) {
             if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
