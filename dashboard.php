@@ -155,7 +155,7 @@ include 'inclu/hd.php';
                 <td class="py-3 px-4 text-sm text-${email.status.toLowerCase() === 'sent' ? 'green' : email.status.toLowerCase() === 'failed' ? 'red' : 'orange'}-600 font-semibold">${email.status}</td>
                 <td class="py-3 px-4 text-sm text-gray-700">${email.date}</td>
                 <td class="py-3 px-4 text-sm">
-                    <button class="py-4 px-1 relative border-2 border-transparent text-gray-800 rounded-full hover:text-gray-400 focus:outline-none focus:text-gray-500 transition duration-150 ease-in-out" aria-label="Mail" onclick="toggleMessageRow(${email.id},'${email.email}')">
+                    <button class="py-4 px-1 relative border-2 border-transparent text-gray-800 rounded-full hover:text-gray-400 focus:outline-none focus:text-gray-500 transition duration-150 ease-in-out" aria-label="Mail" onclick="toggleMessageRow(${email.id},'${email.email}')" id="viewmessage">
                         <svg class="h-6 w-6" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
                             <path d="M3 5h18l-9 7-9-7z"></path>
                             <path d="M3 5v14h18V5"></path>
