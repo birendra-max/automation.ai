@@ -1,4 +1,4 @@
-<?php
+br<?php
 require 'inclu/config.php';
 // IMAP configuration
 $hostname = '{imap.gmail.com:993/imap/ssl}INBOX'; // IMAP server (adjust if needed)
@@ -30,15 +30,11 @@ if ($emails) {
         // Extract the email body (plain text or HTML)
         $message = getEmailBody($inbox, $email_number, $structure);
 
-        // Fetch attachments (if any)
-        $attachments = getEmailAttachments($inbox, $email_number, $structure);
-
-        // Insert into the `replies` table
-        $stmt = $conn->prepare("INSERT INTO replies (email_id, user, message, date, attachments) VALUES (?, ?, ?, ?, ?)");
-        $attachments_json = json_encode($attachments); // Save attachments as JSON
-        $stmt->bind_param("issss", $email_id, $from, $message, $date, $attachments_json);
-        $stmt->execute();
-        $stmt->close();
+        // Step 3: Insert the reply into the replies table
+        $stmt_reply = $conn->prepare("INSERT INTO replies (user, message, date) VALUES (?, ?, ?)");
+        $stmt_reply->bind_param("sss", $from, $message, $date);
+        $stmt_reply->execute();
+        $stmt_reply->close();
 
         // Mark email as read
         imap_setflag_full($inbox, $email_number, "\\Seen");
@@ -53,13 +49,6 @@ $conn->close();
 
 echo "Replies stored successfully!\n";
 
-// Helper function to extract email ID from subject (custom logic based on your format)
-function extractEmailIdFromSubject($subject)
-{
-    preg_match('/#(\d+)/', $subject, $matches);
-    return isset($matches[1]) ? intval($matches[1]) : null; // Return the email ID if found, otherwise null
-}
-
 // Helper function to extract email address from the "From" field
 function extractEmailAddress($from)
 {
@@ -72,35 +61,11 @@ function extractEmailAddress($from)
 function getEmailBody($inbox, $email_number, $structure)
 {
     $body = "";
-    if ($structure->type == 0) { // Text or HTML message
-        $body = imap_fetchbody($inbox, $email_number, 1); // Default to part 1 (text or HTML)
-    } else if ($structure->type == 1) { // Text message
-        $body = imap_fetchbody($inbox, $email_number, 1); // Text part
+    if ($structure->type == 0) {
+        $body = imap_fetchbody($inbox, $email_number, 1);
+    } else if ($structure->type == 1) {
+        $body = imap_fetchbody($inbox, $email_number, 1);
     }
     return $body;
 }
 
-// Helper function to extract attachments from email
-function getEmailAttachments($inbox, $email_number, $structure)
-{
-    $attachments = [];
-
-    if (isset($structure->parts) && count($structure->parts)) {
-        foreach ($structure->parts as $index => $part) {
-            if ($part->disposition && $part->disposition == 'ATTACHMENT') {
-                // This part is an attachment, so fetch it
-                $attachment = [];
-                $attachment['filename'] = $part->dparameters[0]->value;
-                $attachment['data'] = imap_fetchbody($inbox, $email_number, $index + 1);
-                // Decode the attachment if necessary
-                if ($part->encoding == 3) { // Base64 encoding
-                    $attachment['data'] = base64_decode($attachment['data']);
-                } elseif ($part->encoding == 4) { // Quoted-printable encoding
-                    $attachment['data'] = quoted_printable_decode($attachment['data']);
-                }
-                $attachments[] = $attachment;
-            }
-        }
-    }
-    return $attachments;
-}
