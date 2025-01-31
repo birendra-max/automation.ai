@@ -8,11 +8,17 @@ include 'inclu/hd.php';
 
 
 <section id="mailai">
-    <div class="max-w-7xl mx-auto bg-white border border-gray-300 shadow-lg rounded-lg p-8">
+    <div class="w-full mx-auto bg-white border border-gray-300 shadow-lg rounded-lg p-8">
         <!-- Alert Container -->
+<<<<<<< HEAD
         <div id="alert-container" class="fixed top-0 left-1/2 transform -translate-x-1/3 mt-4 z-50 w-full max-w-3xl mx-auto">
             <div id="alert" class="bg-green-500 text-white text-center p-4 rounded-lg shadow-lg w-full hidden">
                 <div class="flex items-center justify-between">
+=======
+        <div id="alert-container" class="fixed top-0 left-1/2 transform -translate-x-1/2 mt-4 z-50">
+            <div id="alert" class="bg-green-500 text-white text-center p-4 rounded-lg shadow-lg w-full ml-[25%] mx-auto hidden">
+                <div class="flex items-center justify-center w-full">
+>>>>>>> 716e5f61ed08a7f3b8c1112f6968cc831b0e4470
                     <span id="alert-message" class="font-medium w-full"></span>
                     <button onclick="closeAlert()" class="ml-4 text-white">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -234,6 +240,8 @@ include 'inclu/hd.php';
                         $("#sendmail").css('display', 'block');
                         location.reload();
 
+                        location.reload();
+
                         if (response.status === 'success') {
                             const message = `Your email was sent successfully! Total Emails: ${response.total_emails} | Success Emails: ${response.sent_emails}`;
                             showAlert(message, "success");
@@ -245,7 +253,10 @@ include 'inclu/hd.php';
                             localStorage.setItem('alertMessage', message);
                             localStorage.setItem('alertType', 'error');
                         }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 716e5f61ed08a7f3b8c1112f6968cc831b0e4470
                     },
                     error: function(xhr, status, error) {
                         $("#spinner").css('display', 'none');

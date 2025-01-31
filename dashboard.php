@@ -6,53 +6,69 @@
 include 'inclu/hd.php';
 ?>
 
-<section id="dashboard">
-    <div class="container mx-auto p-6 bg-white rounded-lg shadow-lg">
+<section id="dashboard" class="bg-gray-50 py-12">
+    <div class="container mx-auto p-6 bg-white rounded-lg shadow-xl">
         <!-- Dashboard Header -->
         <div class="text-center mb-8">
-            <h1 class="text-4xl font-semibold text-gray-800">Email Dashboard</h1>
-            <p class="text-lg text-gray-600">Monitor email sending statistics and track email status</p>
+            <h1 class="text-4xl font-extrabold text-gray-800">Email Dashboard</h1>
+            <p class="text-lg text-gray-600">Monitor your email statistics and track email status</p>
         </div>
 
         <!-- Dashboard Metrics Section -->
-        <div class="grid md:grid-cols-3 gap-6">
-            <div class="bg-blue-100 p-6 rounded-lg shadow-md">
-                <div class="text-lg font-medium text-gray-700">Total Emails</div>
-                <div class="text-4xl font-bold text-gray-900" id="total-emails">0</div>
+        <div class="grid md:grid-cols-3 gap-8">
+            <div class="bg-blue-100 p-6 rounded-xl shadow-md flex justify-between items-center">
+                <div>
+                    <p class="text-sm font-medium text-gray-600">Total Emails</p>
+                    <p class="text-3xl font-semibold text-gray-800" id="total-emails">0</p>
+                </div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
             </div>
-            <div class="bg-green-100 p-6 rounded-lg shadow-md">
-                <div class="text-lg font-medium text-gray-700">Sent Emails</div>
-                <div class="text-4xl font-bold text-green-600" id="sent-emails">0</div>
+            <div class="bg-green-100 p-6 rounded-xl shadow-md flex justify-between items-center">
+                <div>
+                    <p class="text-sm font-medium text-gray-600">Sent Emails</p>
+                    <p class="text-3xl font-semibold text-green-600" id="sent-emails">0</p>
+                </div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3l7 7-7 7" />
+                </svg>
             </div>
-            <div class="bg-red-100 p-6 rounded-lg shadow-md">
-                <div class="text-lg font-medium text-gray-700">Failed Emails</div>
-                <div class="text-4xl font-bold text-red-600" id="failed-emails">0</div>
+            <div class="bg-red-100 p-6 rounded-xl shadow-md flex justify-between items-center">
+                <div>
+                    <p class="text-sm font-medium text-gray-600">Failed Emails</p>
+                    <p class="text-3xl font-semibold text-red-600" id="failed-emails">0</p>
+                </div>
             </div>
         </div>
 
         <!-- Emails Table Section -->
         <div class="mt-10">
-            <div class="bg-white p-6 rounded-lg shadow-md">
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-2xl font-semibold text-gray-800">Email Send History</h2>
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <div class="flex justify-between mb-6">
+                    <h2 class="text-2xl font-semibold text-gray-800">Email Delivery Status</h2>
+
+                    <!-- Records per Page Dropdown -->
+                    <div class="flex items-center space-x-4">
+                        <label for="records-per-page" class="text-lg text-gray-700">Show:</label>
+                        <select id="records-per-page" class="px-4 py-2 bg-gray-100 rounded-lg shadow-sm" onchange="changeRowsPerPage(event)">
+                            <option value="10">10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>
+                    </div>
                 </div>
-                <!-- Records per Page Dropdown -->
-                <div class="mt-4 mb-6">
-                    <label for="records-per-page" class="text-lg text-gray-700">Filter : </label>
-                    <select id="records-per-page" class="ml-2 px-3 py-2 text-sm text-gray-700 bg-gray-100 rounded-lg" onchange="changeRowsPerPage(event)">
-                        <option value="10">10</option>
-                        <option value="25">25</option>
-                        <option value="50">50</option>
-                        <option value="100">100</option>
-                    </select>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full table-auto bg-white border border-gray-200 rounded-lg shadow-sm">
-                        <thead class="bg-indigo-50">
+
+                <!-- Emails Table -->
+                <div class="overflow-x-auto bg-white shadow-md rounded-lg">
+                    <table class="min-w-full table-auto border-collapse">
+                        <thead class="bg-gray-200 text-sm text-gray-600">
                             <tr>
-                                <th class="py-3 px-4 text-left text-sm font-medium text-gray-600 cursor-pointer" onclick="sortTable('id')">
-                                    ID <span id="sort-id" class="inline-block ml-2">▲</span>
+                                <th class="py-3 px-4">
+                                    <input type="checkbox" id="select-all" class="form-checkbox text-blue-600" onchange="toggleSelectAll()" />
                                 </th>
+<<<<<<< HEAD
                                 <th class="py-3 px-4 text-left text-sm font-medium text-gray-600">Email</th>
                                 <th class="py-3 px-4 text-left text-sm font-medium text-gray-600">Subject</th>
                                 <th class="py-3 px-4 text-left text-sm font-medium text-gray-600">Status</th>
@@ -60,6 +76,14 @@ include 'inclu/hd.php';
                                     Date <span id="sort-date" class="inline-block ml-2">▲</span>
                                 </th>
                                 <th class="py-3 px-4 text-left text-sm font-medium text-gray-600">Notification</th>
+=======
+                                <th class="py-3 px-4 cursor-pointer" onclick="sortTable('id')">ID <span id="sort-id">▲</span></th>
+                                <th class="py-3 px-4">Email</th>
+                                <th class="py-3 px-4">Subject</th>
+                                <th class="py-3 px-4">Status</th>
+                                <th class="py-3 px-4 cursor-pointer" onclick="sortTable('date')">Date <span id="sort-date">▲</span></th>
+                                <th class="py-3 px-4">Action</th>
+>>>>>>> 716e5f61ed08a7f3b8c1112f6968cc831b0e4470
                             </tr>
                         </thead>
                         <tbody id="email-table-body">
@@ -68,62 +92,46 @@ include 'inclu/hd.php';
                     </table>
                 </div>
 
-                <div class="w-full h-[10vh] flex justify-end items-center mt-6">
-                    <div class="flex items-center space-x-4 bg-white border border-gray-200 shadow-sm px-4 py-2 rounded-lg">
-                        <button
-                            class="flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 disabled:opacity-50"
-                            id="prev-btn"
-                            onclick="changePage('prev')"
-                            disabled>
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
-                            </svg>
-                            Previous
-                        </button>
-                        <div class="text-sm font-medium text-gray-600">
-                            Page <span id="current-page" class="font-bold text-gray-800">1</span> of <span id="total-pages" class="font-bold text-gray-800">1</span>
-                        </div>
-                        <button
-                            class="flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 disabled:opacity-50"
-                            id="next-btn"
-                            onclick="changePage('next')"
-                            disabled>
-                            Next
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-                            </svg>
-                        </button>
-                    </div>
+                <!-- Pagination -->
+                <div class="mt-6 flex justify-end items-center space-x-4">
+                    <button id="prev-btn" class="btn-pagination" onclick="changePage('prev')" disabled>Previous</button>
+                    <span class="text-sm font-medium text-gray-600">Page <span id="current-page">1</span> of <span id="total-pages">1</span></span>
+                    <button id="next-btn" class="btn-pagination" onclick="changePage('next')" disabled>Next</button>
                 </div>
-
             </div>
         </div>
-    </div>
 
-    <script>
-        let emailData = []; // Store fetched data here
-        let currentPage = 1;
-        let rowsPerPage = 10; // Default number of rows per page
-        let sortOrder = {
-            id: 'asc',
-            date: 'asc'
-        }; // Sort order tracking
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script>
+            let emailData = [];
+            let currentPage = 1;
+            let rowsPerPage = 10; // Default number of rows per page
+            let selectedEmails = [];
 
-        // Fetch email data from the PHP endpoint
-        function fetchEmailData() {
-            fetch('getEmalis.php') // Replace with your actual API endpoint
-                .then(response => response.json())
-                .then(data => {
-                    emailData = data;
-                    emailData.sort((a, b) => {
-                        return sortOrder.id === 'asc' ? a.id - b.id : b.id - a.id;
-                    });
-                    renderTable(getPaginatedData());
-                    updatePagination();
-                })
-                .catch(error => {
-                    console.error('Error fetching email data:', error);
+            // Fetch email data from the backend using AJAX
+            function fetchEmailData() {
+                $.ajax({
+                    url: 'getEmails.php', // Your backend endpoint
+                    type: 'GET',
+                    dataType: 'json',
+                    data: {
+                        page: currentPage,
+                        recordsPerPage: rowsPerPage,
+                        sortColumn: 'date_sent', // Default sorting by date
+                        sortOrder: 'DESC' // Default to descending order
+                    },
+                    success: function(data) {
+                        console.log('Fetched Data:', data); // Log the fetched data
+                        emailData = data.emails; // Assuming 'emails' is the array from the backend
+                        updateEmailMetrics(data.totalEmails, data.sentEmails, data.failedEmails);
+                        renderTable(getPaginatedData());
+                        updatePagination(data.totalPages, data.currentPage);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error fetching email data:', error);
+                    }
                 });
+<<<<<<< HEAD
         }
 
         // Get paginated data for the current page
@@ -196,42 +204,126 @@ include 'inclu/hd.php';
         function truncateToChars(text, charLimit) {
             if (text.length <= charLimit) {
                 return text;
+=======
+>>>>>>> 716e5f61ed08a7f3b8c1112f6968cc831b0e4470
             }
-            return text.slice(0, charLimit) + '...';
-        }
 
-        // Update pagination controls
-        function updatePagination() {
-            const totalPages = Math.ceil(emailData.length / rowsPerPage);
-            document.getElementById('current-page').textContent = currentPage;
-            document.getElementById('total-pages').textContent = totalPages;
-
-            document.getElementById('prev-btn').disabled = currentPage === 1;
-            document.getElementById('next-btn').disabled = currentPage === totalPages;
-        }
-
-        // Handle page changes
-        function changePage(direction) {
-            if (direction === 'prev' && currentPage > 1) {
-                currentPage--;
-            } else if (direction === 'next' && currentPage < Math.ceil(emailData.length / rowsPerPage)) {
-                currentPage++;
+            // Update email metrics (Total, Sent, Failed Emails)
+            function updateEmailMetrics(totalEmails, sentEmails, failedEmails) {
+                document.getElementById('total-emails').textContent = totalEmails;
+                document.getElementById('sent-emails').textContent = sentEmails;
+                document.getElementById('failed-emails').textContent = failedEmails;
             }
-            renderTable(getPaginatedData());
-            updatePagination();
-        }
 
-        // Sort the table
-        function sortTable(column) {
-            sortOrder[column] = sortOrder[column] === 'asc' ? 'desc' : 'asc';
+            // Get paginated data for the current page
+            function getPaginatedData() {
+                const startIndex = (currentPage - 1) * rowsPerPage;
+                return emailData.slice(startIndex, startIndex + rowsPerPage);
+            }
 
-            emailData.sort((a, b) => {
-                if (column === 'id') {
-                    return sortOrder[column] === 'asc' ? a.id - b.id : b.id - a.id;
-                } else if (column === 'date') {
-                    return sortOrder[column] === 'asc' ? new Date(a.date) - new Date(b.date) : new Date(b.date) - new Date(a.date);
+            // Render the table rows
+            function renderTable(data) {
+                const tableBody = document.getElementById('email-table-body');
+                tableBody.innerHTML = ''; // Clear the table
+
+                data.forEach(email => {
+                    const row = document.createElement('tr');
+                    row.classList.add('border-b', 'hover:bg-gray-50');
+                    row.innerHTML = `
+                        <td class="py-3 px-4">
+                            <input type="checkbox" id="email-${email.id}" class="form-checkbox text-blue-600" onchange="toggleSelectEmail(${email.id})" />
+                        </td>
+                        <td class="py-3 px-4">${email.id}</td>
+                        <td class="py-3 px-4">${email.email}</td>
+                        <td class="py-3 px-4">${email.subject}</td>
+                        <td class="py-3 px-4 text-${email.status === 'Sent' ? 'green' : 'red'}-600 font-semibold">${email.status}</td>
+                        <td class="py-3 px-4">${email.date}</td>
+                        <td class="py-3 px-4 text-blue-600 cursor-pointer" onclick="toggleMessageRow(${email.id})">View Message</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            }
+
+            // Update pagination controls
+            function updatePagination(totalPages, currentPage) {
+                document.getElementById('total-pages').textContent = totalPages;
+                document.getElementById('current-page').textContent = currentPage;
+
+                document.getElementById('prev-btn').disabled = currentPage === 1;
+                document.getElementById('next-btn').disabled = currentPage === totalPages;
+            }
+
+            // Handle page changes (Previous/Next)
+            function changePage(direction) {
+                if (direction === 'prev' && currentPage > 1) {
+                    currentPage--;
+                } else if (direction === 'next' && currentPage < Math.ceil(emailData.length / rowsPerPage)) {
+                    currentPage++;
                 }
+                fetchEmailData(); // Re-fetch data with updated page
+            }
+
+            // Sort the table by ID or Date
+            function sortTable(column) {
+                const sortOrder = document.getElementById(`sort-${column}`).textContent === '▲' ? 'ASC' : 'DESC';
+                // Update the sort order indicator
+                document.getElementById(`sort-${column}`).textContent = sortOrder === 'ASC' ? '▼' : '▲';
+
+                $.ajax({
+                    url: 'getEmails.php',
+                    type: 'GET',
+                    dataType: 'json',
+                    data: {
+                        page: currentPage,
+                        recordsPerPage: rowsPerPage,
+                        sortColumn: column,
+                        sortOrder: sortOrder
+                    },
+                    success: function(data) {
+                        emailData = data.emails;
+                        renderTable(getPaginatedData());
+                        updatePagination(data.totalPages, data.currentPage);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error sorting email data:', error);
+                    }
+                });
+            }
+
+            // Toggle the selection of individual emails
+            function toggleSelectEmail(emailId) {
+                const checkbox = document.querySelector(`#email-${emailId}`);
+                if (checkbox.checked) {
+                    selectedEmails.push(emailId);
+                } else {
+                    selectedEmails = selectedEmails.filter(id => id !== emailId);
+                }
+            }
+
+            // Toggle the selection of all emails
+            function toggleSelectAll() {
+                const selectAllCheckbox = document.getElementById('select-all');
+                selectedEmails = selectAllCheckbox.checked ? emailData.map(email => email.id) : [];
+                document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                    checkbox.checked = selectAllCheckbox.checked;
+                });
+            }
+
+            // Handle records per page change
+            function changeRowsPerPage(event) {
+                rowsPerPage = parseInt(event.target.value);
+                currentPage = 1; // Reset to first page when filter is changed
+                fetchEmailData(); // Re-fetch data with updated rows per page
+            }
+
+            // Initialize the data on page load
+            document.addEventListener('DOMContentLoaded', fetchEmailData);
+
+            // Style for pagination buttons
+            document.querySelectorAll('.btn-pagination').forEach(button => {
+                button.classList.add('px-4', 'py-2', 'bg-blue-500', 'text-white', 'rounded-lg', 'shadow-sm', 'hover:bg-blue-600', 'disabled:opacity-50');
             });
+<<<<<<< HEAD
 
             document.getElementById(`sort-${column}`).textContent = sortOrder[column] === 'asc' ? '▲' : '▼';
             renderTable(getPaginatedData());
@@ -259,8 +351,11 @@ include 'inclu/hd.php';
         // Fetch data on page load
         document.addEventListener('DOMContentLoaded', fetchEmailData);
     </script>
+=======
+        </script>
+    </div>
+>>>>>>> 716e5f61ed08a7f3b8c1112f6968cc831b0e4470
 </section>
-
 
 <?php
 include 'inclu/footer.php';
