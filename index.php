@@ -1,4 +1,5 @@
 <script src="https://cdn.tailwindcss.com"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 <script src="public/js/jQuery.js"></script>
 <?php session_start(); ?>
 <section>
@@ -54,14 +55,16 @@
 
                     <div class="mt-8">
                         <div class="relative flex items-center">
-                            <input name="password" type="password" required class="w-full text-sm border-b border-gray-300 focus:border-blue-600 px-2 py-3 outline-none" placeholder="Enter password" />
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="#bbb" stroke="#bbb" class="w-[18px] h-[18px] absolute right-2 cursor-pointer" viewBox="0 0 128 128">
-                                <path d="M64 104C22.127 104 1.367 67.496.504 65.943a4 4 0 0 1 0-3.887C1.367 60.504 22.127 24 64 24s62.633 36.504 63.496 38.057a4 4 0 0 1 0 3.887C126.633 67.496 105.873 104 64 104zM8.707 63.994C13.465 71.205 32.146 96 64 96c31.955 0 50.553-24.775 55.293-31.994C114.535 56.795 95.854 32 64 32 32.045 32 13.447 56.775 8.707 63.994zM64 88c-13.234 0-24-10.766-24-24s10.766-24 24-24 24 10.766 24 24-10.766 24-24 24zm0-40c-8.822 0-16 7.178-16 16s7.178 16 16 16 16-7.178 16-16-7.178-16-16-16z" data-original="#000000"></path>
-                            </svg>
+                            <input name="password" type="password" required class="w-full text-sm border-b border-gray-300 focus:border-blue-600 px-2 py-3 outline-none" placeholder="Enter password" id="password" />
+                            <!-- Eye open (default) icon -->
+                            <i id="eye-open-icon" class="fas fa-eye absolute right-2 cursor-pointer text-gray-500"></i>
+
+                            <!-- Eye slash icon (hidden initially) -->
+                            <i id="eye-slash-icon" class="fas fa-eye-slash absolute right-2 cursor-pointer text-gray-500 hidden"></i>
                         </div>
                     </div>
 
-                    <div class="flex flex-wrap items-center justify-between gap-4 mt-6">
+                    <!-- <div class="flex flex-wrap items-center justify-between gap-4 mt-6">
                         <div class="flex items-center">
                             <input id="remember-me" name="remember-me" type="checkbox" class="h-4 w-4 shrink-0 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
                             <label for="remember-me" class="text-gray-800 ml-3 block text-sm">
@@ -69,22 +72,56 @@
                             </label>
                         </div>
                         <div>
-                            <a href="jajvascript:void(0);" class="text-blue-600 font-semibold text-sm hover:underline">
+                            <a href="javascript:void(0);" class="text-blue-600 font-semibold text-sm hover:underline">
                                 Forgot Password?
                             </a>
                         </div>
-                    </div>
+                    </div> -->
 
                     <div class="mt-12">
-                        <?php
-                        include 'inclu/spinner.php'
-                        ?>
+                        <?php include 'inclu/spinner.php' ?>
                         <button type="submit" id="login" class="w-full shadow-xl py-2.5 px-4 text-sm font-semibold tracking-wide rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none">
                             Sign in
                         </button>
-                        <!-- <p class="text-gray-800 text-sm text-center mt-6">Don't have an account <a href="javascript:void(0);" class="text-blue-600 font-semibold hover:underline ml-1 whitespace-nowrap">Register here</a></p> -->
                     </div>
                 </form>
+
+                <!-- JavaScript to toggle eye open/eye slash icon -->
+                <script>
+                    // Get the password field and eye icons
+                    const passwordField = document.getElementById("password");
+                    const eyeOpenIcon = document.getElementById("eye-open-icon");
+                    const eyeSlashIcon = document.getElementById("eye-slash-icon");
+
+                    // Add click event listener to toggle password visibility
+                    eyeOpenIcon.addEventListener("click", function() {
+                        // Toggle the password field visibility
+                        if (passwordField.type === "password") {
+                            passwordField.type = "text"; // Show password
+                            eyeOpenIcon.classList.add("hidden"); // Hide open eye
+                            eyeSlashIcon.classList.remove("hidden"); // Show eye slash
+                        } else {
+                            passwordField.type = "password"; // Hide password
+                            eyeOpenIcon.classList.remove("hidden"); // Show open eye
+                            eyeSlashIcon.classList.add("hidden"); // Hide eye slash
+                        }
+                    });
+
+                    // Add click event listener for eye slash icon to toggle visibility
+                    eyeSlashIcon.addEventListener("click", function() {
+                        // Toggle the password field visibility
+                        if (passwordField.type === "password") {
+                            passwordField.type = "text"; // Show password
+                            eyeOpenIcon.classList.add("hidden"); // Hide open eye
+                            eyeSlashIcon.classList.remove("hidden"); // Show eye slash
+                        } else {
+                            passwordField.type = "password"; // Hide password
+                            eyeOpenIcon.classList.remove("hidden"); // Show open eye
+                            eyeSlashIcon.classList.add("hidden"); // Hide eye slash
+                        }
+                    });
+                </script>
+
             </div>
         </div>
     </div>
