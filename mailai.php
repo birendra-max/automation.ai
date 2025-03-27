@@ -222,6 +222,8 @@ include 'inclu/hd.php';
 
                 const formData = $(this).serialize();
                 const decodeData = decodeURIComponent(formData);
+                console.log(decodeData);
+
 
                 $.ajax({
                     url: 'sendMail.php',

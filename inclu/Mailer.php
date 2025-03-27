@@ -2,7 +2,7 @@
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-require 'Third-Party/vendor/autoload.php';
+require '/opt/lampp/htdocs/automation.ai/Third-party/vendor/autoload.php';
 
 function sendEmail($emails, $subject, $htmlBody, $altBody)
 {
@@ -11,14 +11,14 @@ function sendEmail($emails, $subject, $htmlBody, $altBody)
     try {
         $mail->SMTPDebug = 0;
         $mail->isSMTP();
-        $mail->Host = 'smtp.hostinger.com';
+        $mail->Host = 'smtp.gmail.com';
         $mail->SMTPAuth = true;
-        $mail->Username = 'sales@bravodentdesigns.com';
-        $mail->Password = 'Sales@Bravo@2025';
+        $mail->Username = 'devansh@dentigolab.com';
+        $mail->Password = 'keca jazv uagc wcuy';
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port = 587;
 
-        $mail->setFrom('sales@bravodentdesigns.com', 'BravoDent Design Sales'); 
+        $mail->setFrom('devansh@dentigolab.com', 'Dentigo Designs'); 
 
         foreach ($emails as $email) {
             if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -44,6 +44,6 @@ function sendEmail($emails, $subject, $htmlBody, $altBody)
 
 // Example of how to use the function
 // You can call this function by passing an array of emails
-// $emails = ['email1@example.com', 'email2@example.com', 'email3@example.com'];
+// $emails = ['birendrapradhan112@gmail.com'];
 // $response = sendEmail($emails, 'Test Subject', '<h1>Hello, World!</h1><p>This is a test email sent using PHPMailer.</p>', 'This is the plain text version of the email content.');
 // echo $response;
