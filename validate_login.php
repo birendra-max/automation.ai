@@ -48,6 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                 // Insert the login history into the database
                 $stmt = $conn->prepare("INSERT INTO login_history (user_email, login_id, login_date, login_time, ip_address, user_agent) VALUES (?, ?, ?, ?, ?, ?)");
+
                 $stmt->bind_param("ssssss", $_POST['email'], $uniqueId, $login_date, $login_time, $ip_address, $user_agent);
                 $stmt->execute();
 
