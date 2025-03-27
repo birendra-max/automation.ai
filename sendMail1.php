@@ -20,6 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
+
     $emailArray = array_map('trim', explode(',', $emails));
 
     $totalEmails = count($emailArray);
@@ -29,14 +30,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $currentTime = date('Y-m-d h:i:s A');
 
-    foreach ($emailArray as $email) {
-        // Validate email
-        if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            // Send email one by one
-            $mailSent = sendEmail([$email], $subject, $message, '');  // Send each email individually
+    $mailSent = sendEmail($emailArray, $subject, $message, '');
 
+
+
+    foreach ($emailArray as $email) {
+        if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
             if ($mailSent) {
-                // Insert into successful_emails table
                 $stmt = $conn->prepare("INSERT INTO successful_emails (email, subject, message, date_sent) VALUES (?, ?, ?, ?)");
                 $stmt->bind_param("ssss", $email, $subject, $message, $currentTime);
                 if (!$stmt->execute()) {
@@ -47,7 +47,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } else {
                 $failedCount++;
                 $errors[] = $email;
-                // Insert into failed_emails table
                 $stmt = $conn->prepare("INSERT INTO failed_emails (email, subject, message, error_message, date_sent) VALUES (?, ?, ?, ?, ?)");
                 $stmt->bind_param("sssss", $email, $subject, $message, 'Mail sending failed', $currentTime);
                 if (!$stmt->execute()) {
@@ -58,7 +57,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             $failedCount++;
             $errors[] = $email;
-            // Insert into failed_emails table for invalid email
             $stmt = $conn->prepare("INSERT INTO failed_emails (email, subject, message, error_message, date_failed) VALUES (?, ?, ?, ?, ?)");
             $stmt->bind_param("sssss", $email, $subject, $message, 'Invalid email format', $currentTime);
             if (!$stmt->execute()) {
@@ -68,7 +66,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // Send response back
     if (empty($errors)) {
         echo json_encode([
             'status' => 'success',
