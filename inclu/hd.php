@@ -6,11 +6,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Automation | AI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="public/js/jQuery.js"></script>
-    <!-- <link rel="stylesheet" href="https://cdn.ckeditor.com/ckeditor5/44.1.0/ckeditor5.css" crossorigin>
-    <link rel="stylesheet" href="https://cdn.ckeditor.com/ckeditor5-premium-features/44.1.0/ckeditor5-premium-features.css" crossorigin> -->
-    <!-- include libraries(jQuery, bootstrap) -->
+
+    <!-- Dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+
+    <!-- Summernote -->
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.js"></script>
     <style>
         #editor {
             height: 400px;
@@ -19,23 +28,11 @@
     </style>
 
     <script>
-        // Function to toggle sidebar visibility
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             sidebar.classList.toggle('hidden');
         }
     </script>
-
-    <!-- <script>
-        $(document).ready(function() {
-            let userData = JSON.parse(localStorage.getItem('userDetails'));
-            if (userData.role == 'user') {
-                $("#dashboard").hide();
-            } else {
-                $("#dashboard").show();
-            }
-        })
-    </script> -->
 </head>
 
 <body>
@@ -43,9 +40,9 @@
         <!-- Sidebar -->
         <div id="sidebar" class="hidden md:flex flex-col w-64 bg-slate-950">
             <div class="flex items-center justify-center h-16 bg-slate-950">
-                <span class="text-white font-bold uppercase">AutomationAI.com </span>
+                <span class="text-white font-bold uppercase">Automation </span>
             </div>
-            <div class="flex flex-col flex-1 overflow-y-auto">
+            <div class="flex flex-col flex-1 overflow-y-auto border-t-4 border-white">
                 <nav class="flex-1 px-2 py-4 bg-slate-950">
                     <?php
 
@@ -73,6 +70,14 @@
                                 </svg>
                                 Inbox | AI
                             </a>
+
+
+                            <a href="calling.php" class="flex items-center px-4 py-2 text-gray-100 hover:bg-gray-700" id="calling">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="h-4 w-4 mr-2" fill="white">
+                                    <path d="M280 0C408.1 0 512 103.9 512 232c0 13.3-10.7 24-24 24s-24-10.7-24-24c0-101.6-82.4-184-184-184c-13.3 0-24-10.7-24-24s10.7-24 24-24zm8 192a32 32 0 1 1 0 64 32 32 0 1 1 0-64zm-32-72c0-13.3 10.7-24 24-24c75.1 0 136 60.9 136 136c0 13.3-10.7 24-24 24s-24-10.7-24-24c0-48.6-39.4-88-88-88c-13.3 0-24-10.7-24-24zM117.5 1.4c19.4-5.3 39.7 4.6 47.4 23.2l40 96c6.8 16.3 2.1 35.2-11.6 46.3L144 207.3c33.3 70.4 90.3 127.4 160.7 160.7L345 318.7c11.2-13.7 30-18.4 46.3-11.6l96 40c18.6 7.7 28.5 28 23.2 47.4l-24 88C481.8 499.9 466 512 448 512C200.6 512 0 311.4 0 64C0 46 12.1 30.2 29.5 25.4l88-24z" />
+                                </svg>
+                                Auto Calling
+                            </a>
                         <?php
                         } elseif ($_SESSION['user_details']['role'] == 'user') {
                             // User menu options
@@ -99,7 +104,7 @@
         <!-- Main Content -->
         <div class="flex flex-col flex-1 overflow-y-auto w-full bg-gradient-to-r from-blue-50 via-indigo-100 to-blue-50">
             <!-- Top Bar -->
-            <div class="flex items-center justify-between h-16 bg-white border-b border-gray-200 p-4">
+            <div class="flex items-center justify-between h-16 bg-white border-b border-gray-200 p-4 px-4">
                 <div class="flex items-center px-4">
                     <!-- Hamburger Menu for Sidebar Toggle -->
                     <button onclick="toggleSidebar()" class="text-gray-500 focus:outline-none focus:text-gray-700 md:hidden">

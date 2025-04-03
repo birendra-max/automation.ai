@@ -17,6 +17,7 @@
 </footer>
 <script>
     let title = document.title;
+
     if (title == 'Dashboard | AI') {
         document.getElementById('dashboard').classList.add('bg-gray-700');
     } else {
@@ -33,6 +34,12 @@
         document.getElementById('inbox').classList.add('bg-gray-700');
     } else {
         document.getElementById('inbox').classList.remove('bg-gray-700');
+    }
+
+    if (title == 'Auto Calling') {
+        document.getElementById('calling').classList.add('bg-gray-700');
+    } else {
+        document.getElementById('calling').classList.remove('bg-gray-700');
     }
 </script>
 
