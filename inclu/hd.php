@@ -67,7 +67,7 @@
                                 Mail Automation | AI
                             </a>
 
-                            <a href="inbox.php" class="flex items-center px-4 py-2 text-gray-100 hover:bg-gray-700" id="mailai">
+                            <a href="inbox.php" class="flex items-center px-4 py-2 text-gray-100 hover:bg-gray-700" id="inbox">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.5 5L18 8M21 12V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-6" />
                                 </svg>

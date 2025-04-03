@@ -1,4 +1,3 @@
-
 </main>
 </div>
 </div>
@@ -28,6 +27,12 @@
         document.getElementById('mailai').classList.add('bg-gray-700');
     } else {
         document.getElementById('mailai').classList.remove('bg-gray-700');
+    }
+
+    if (title == 'Inbox | AI') {
+        document.getElementById('inbox').classList.add('bg-gray-700');
+    } else {
+        document.getElementById('inbox').classList.remove('bg-gray-700');
     }
 </script>
 

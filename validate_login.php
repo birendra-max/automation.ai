@@ -35,18 +35,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $stmt = $conn->prepare("UPDATE users SET is_active = ?, last_login = ? WHERE email = ?");
             $stmt->bind_param("iss", $active, $last_login, $_POST['email']);
 
-            // Execute the update query
             if ($stmt->execute()) {
-                // Insert the login history into the database
                 $login_datetime = date('Y-m-d H:i:s');
-                $login_date = date('Y-m-d'); // Extract date part (YYYY-MM-DD)
-                $login_time = date('H:i:s'); // Extract time part (HH:MM:SS)
+                $login_date = date('Y-m-d');
+                $login_time = date('Y-m-d H:i:s');
 
-                // Capture the user's IP address and User-Agent string
                 $ip_address = $_SERVER['REMOTE_ADDR'];
                 $user_agent = $_SERVER['HTTP_USER_AGENT'];
 
-                // Insert the login history into the database
                 $stmt = $conn->prepare("INSERT INTO login_history (user_email, login_id, login_date, login_time, ip_address, user_agent) VALUES (?, ?, ?, ?, ?, ?)");
 
                 $stmt->bind_param("ssssss", $_POST['email'], $uniqueId, $login_date, $login_time, $ip_address, $user_agent);
