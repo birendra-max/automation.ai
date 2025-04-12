@@ -59,7 +59,7 @@ include 'inclu/hd.php';
 </div>
 
 <script>
-    let callCancelled = false; // flag to skip current call if user ends it
+    let callCancelled = false;
 
     document.getElementById('callForm').addEventListener('submit', async function(e) {
         e.preventDefault();
@@ -75,7 +75,6 @@ include 'inclu/hd.php';
         tableBody.innerHTML = '';
 
         for (const number of numbers) {
-            // Reset cancel flag before every call
             callCancelled = false;
 
             const row = document.createElement('tr');
@@ -124,13 +123,12 @@ include 'inclu/hd.php';
                 row.querySelector('.status').innerText = 'Error';
             }
 
-            hideMobileCallUI(); // Hide overlay after each call
+            hideMobileCallUI();
         }
     });
 
     function callAgain(number) {
         alert(`Re-calling ${number}`);
-        // You can repeat the same call logic here if needed
     }
 
     function showMobileCallUI(number) {
