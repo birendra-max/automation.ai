@@ -76,7 +76,7 @@ function callClientAndWaitForResult($toNumber)
         return ['error' => 'DB Connection failed: ' . $conn->connect_error];
     }
 
-    $stmt = $conn->prepare("INSERT INTO call_logs (to_number, call_sid, status, duration, recording_url, date, time) VALUES (?, ?, ?, ?, ?, ?, ?)");
+    $stmt = $conn->prepare(query: "INSERT INTO call_logs (to_number, call_sid, status, duration, recording_url, date, time) VALUES (?, ?, ?, ?, ?, ?, ?)");
     $date = date('Y-m-d');
     $time = date('H:i:s');
     $duration = isset($call->duration) ? $call->duration : null;
