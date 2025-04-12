@@ -12,7 +12,7 @@ Returns a JSON response. -->
 
 
 <?php
-require __DIR__ . '/vendor/autoload.php';
+require __DIR__ . '/Third-party/vendor/autoload.php';
 
 use Twilio\Rest\Client;
 
@@ -104,7 +104,7 @@ function callClientAndWaitForResult($toNumber)
 
 // Test call
 header('Content-Type: application/json');
-echo json_encode(callClientAndWaitForResult('+15558675310'));
+// echo json_encode(callClientAndWaitForResult('+15558675310'));
 
 
 
