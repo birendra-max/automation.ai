@@ -1,46 +1,39 @@
-<!-- Makes a call using Twilio.
-
-Waits until the call is completed.
-
-Retrieves the recording.
-
-Saves the .mp3 file to a local /recordings/ directory.
-
-Stores the call details (number, SID, status, duration, recording URL, date/time) in a MySQL database.
-
-Returns a JSON response. -->
-
-
 <?php
+header('Access-Control-Allow-Origin: *');
+header('Content-Type: application/json');
+
 require __DIR__ . '/Third-party/vendor/autoload.php';
 
 use Twilio\Rest\Client;
 
 function callClientAndWaitForResult($toNumber)
 {
-    // Twilio credentials
-    $account_sid = 'YOUR_TWILIO_SID';
-    $auth_token = 'YOUR_TWILIO_AUTH_TOKEN';
-    $twilio_number = 'YOUR_TWILIO_PHONE';
+    $account_sid = '';
+    $auth_token = '';
+    $twilio_number = '';
 
     $client = new Client($account_sid, $auth_token);
 
-    // Make the outbound call
-    $call = $client->calls->create(
-        $toNumber,
-        $twilio_number,
-        [
-            'url' => 'https://yourdomain.com/twiml.xml',
-            'record' => true
-        ]
-    );
+    try {
+        $call = $client->calls->create(
+            $toNumber,
+            $twilio_number,
+            [
+                'url' => 'https://yourdomain.com/twiml.php?to=' . urlencode($toNumber),
+                'record' => true
+            ]
+        );
+    } catch (Exception $e) {
+        return ['error' => 'Twilio call failed: ' . $e->getMessage()];
+    }
 
     $callSid = $call->sid;
 
-    // Wait for the call to complete
+    // Wait for call completion
     $maxWait = 60;
     $waited = 0;
     $status = '';
+
     while ($waited < $maxWait) {
         sleep(3);
         $waited += 3;
@@ -53,7 +46,7 @@ function callClientAndWaitForResult($toNumber)
         }
     }
 
-    // Fetch recording
+    // Recording
     $recordings = $client->recordings->read(['callSid' => $callSid]);
     $recordingUrl = null;
     $localPath = null;
@@ -62,7 +55,6 @@ function callClientAndWaitForResult($toNumber)
         $recording = $recordings[0];
         $recordingUrl = 'https://api.twilio.com' . $recording->uri . '.mp3';
 
-        // Save recording to /recordings folder
         $saveDir = __DIR__ . '/recordings/';
         if (!is_dir($saveDir)) {
             mkdir($saveDir, 0755, true);
@@ -81,7 +73,7 @@ function callClientAndWaitForResult($toNumber)
     $conn = new mysqli("localhost", "db_user", "db_pass", "your_database");
 
     if ($conn->connect_error) {
-        die("DB Connection failed: " . $conn->connect_error);
+        return ['error' => 'DB Connection failed: ' . $conn->connect_error];
     }
 
     $stmt = $conn->prepare("INSERT INTO call_logs (to_number, call_sid, status, duration, recording_url, date, time) VALUES (?, ?, ?, ?, ?, ?, ?)");
@@ -102,19 +94,11 @@ function callClientAndWaitForResult($toNumber)
     ];
 }
 
-// Test call
-header('Content-Type: application/json');
-// echo json_encode(callClientAndWaitForResult('+15558675310'));
-
-
-
-/*CREATE TABLE call_logs (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    to_number VARCHAR(20),
-    call_sid VARCHAR(50),
-    status VARCHAR(20),
-    duration VARCHAR(10),
-    recording_url TEXT,
-    date DATE,
-    time TIME
-);*/
+// Handle incoming POST request (form-urlencoded)
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['number'])) {
+    $toNumber = $_POST['number'];
+    $result = callClientAndWaitForResult($toNumber);
+    echo json_encode($result);
+} else {
+    echo json_encode(['error' => 'Invalid request. Phone number missing.']);
+}
