@@ -8,23 +8,28 @@ include 'inclu/hd.php';
 
 
 <!-- UI + Table Section -->
-<section class="max-w-7xl mx-auto bg-white border border-gray-300 shadow-lg rounded-lg p-8 mt-8">
+<section class="max-w-8xl mx-auto bg-white border border-gray-300 shadow-lg rounded-lg p-8 mt-2">
     <div class="px-6 py-4 faq-answer">
         <form id="callForm" class="mb-4">
-            <label for="number" class="block text-teal-600 font-medium text-2xl mb-2">Phone Numbers</label>
-            <input
-                type="text"
-                id="number"
+            <label for="number" class="block text-teal-600 font-bold text-2xl mb-2">Phone Numbers</label>
+
+            <textarea name="" id="number"
                 class="w-full px-4 py-3 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
-                placeholder="Enter recipient numbers (comma-separated for multiple)"
-                name="number"
-                required />
-            <button
-                type="submit"
-                class="save-btn px-4 py-2 mt-4 bg-teal-600 text-white rounded hover:bg-teal-700"
-                id="sendmail">
-                Start Calling
-            </button>
+                placeholder="Enter recipient numbers (comma-separated for multiple)" name="number" required></textarea>
+
+            <!-- Buttons -->
+            <div class="mt-4 flex gap-4">
+                <button type="submit"
+                    class="save-btn px-4 py-2 bg-teal-500 text-white font-bold text-lg rounded hover:bg-teal-700">
+                    Start Calling
+                </button>
+
+                <button type="button"
+                    class="save-btn px-4 py-2 bg-yellow-500 text-black font-bold text-lg rounded hover:bg-yellow-700"
+                    id="dialSelf">
+                    Dial Your Number
+                </button>
+            </div>
         </form>
 
         <div id="callTableWrapper" class="mt-8 overflow-x-auto hidden">
@@ -48,15 +53,85 @@ include 'inclu/hd.php';
 </section>
 
 <!-- Mobile Call UI -->
-<div id="mobileCallUI" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 hidden">
-    <div class="text-center text-white">
-        <p class="text-3xl font-semibold mb-4">Calling...</p>
-        <p id="mobileNumberDisplay" class="text-xl text-teal-300"></p>
+<div id="mobileCallUI" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+    <div
+        class="w-[30%] h-[50%] bg-[#1a1a1a] text-white rounded-2xl shadow-2xl flex flex-col items-center justify-between py-10 px-8">
+
+        <!-- Caller Info -->
+        <div class="flex flex-col items-center">
+            <div class="w-28 h-28 rounded-full bg-teal-600 flex items-center justify-center mb-6 shadow-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-14 w-14 text-white" viewBox="0 0 20 20"
+                    fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 10a4 4 0 100-8 4 4 0 000 8zm-6 8a6 6 0 1112 0H4z"
+                        clip-rule="evenodd" />
+                </svg>
+            </div>
+            <p class="text-3xl font-bold mb-2">Calling...</p>
+            <p id="mobileNumberDisplay" class="text-lg text-teal-400">+0000000000</p>
+        </div>
+
+        <!-- Action Buttons Grid -->
+        <div class="grid grid-cols-4 gap-4 mt-8">
+            <!-- Pause -->
+            <button id="pauseCall"
+                class="w-14 h-14 rounded-full bg-yellow-400 flex items-center justify-center hover:bg-yellow-500 transition duration-300 shadow-md"
+                title="Pause Call">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-black" viewBox="0 0 20 20"
+                    fill="currentColor">
+                    <path d="M6 4h2v12H6V4zm6 0h2v12h-2V4z" />
+                </svg>
+            </button>
+
+            <!-- Start Recording -->
+            <button id="startRecording"
+                class="w-14 h-14 rounded-full bg-blue-500 flex items-center justify-center hover:bg-blue-600 transition duration-300 shadow-md"
+                title="Start Recording">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" viewBox="0 0 20 20"
+                    fill="currentColor">
+                    <circle cx="10" cy="10" r="5" />
+                </svg>
+            </button>
+
+            <!-- Stop Recording -->
+            <button id="stopRecording"
+                class="w-14 h-14 rounded-full bg-gray-600 flex items-center justify-center hover:bg-gray-700 transition duration-300 shadow-md"
+                title="Stop Recording">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20"
+                    fill="currentColor">
+                    <rect x="6" y="6" width="8" height="8" />
+                </svg>
+            </button>
+
+            <!-- Message Button -->
+            <button id="messageBox"
+                class="w-14 h-14 rounded-full bg-green-600 flex items-center justify-center hover:bg-green-700 transition duration-300 shadow-md"
+                title="Open Message Box">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" viewBox="0 0 20 20"
+                    fill="currentColor">
+                    <path d="M2 5a2 2 0 012-2h12a2 2 0 012 2v7a2 2 0 01-2 2H6l-4 4V5z" />
+                </svg>
+            </button>
+        </div>
+
+
+        <!-- End Call -->
         <div class="mt-6">
-            <button id="closeCallUI" class="bg-red-500 px-4 py-2 rounded hover:bg-red-600">End Call</button>
+            <button id="closeCallUI"
+                class="w-14 h-14 rounded-full bg-red-600 flex items-center justify-center hover:bg-red-700 transition duration-300 shadow-md"
+                title="End Call">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" viewBox="0 0 20 20"
+                    fill="currentColor">
+                    <path fill-rule="evenodd"
+                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                        clip-rule="evenodd" />
+                </svg>
+            </button>
         </div>
     </div>
 </div>
+
+
+
 
 <script>
     let callCancelled = false;
@@ -74,7 +149,8 @@ include 'inclu/hd.php';
         const tableBody = document.getElementById('callTableBody');
         tableBody.innerHTML = '';
 
-        for (const number of numbers) {
+        for (let i = 0; i < numbers.length; i++) {
+            const number = numbers[i];
             callCancelled = false;
 
             const row = document.createElement('tr');
@@ -87,18 +163,18 @@ include 'inclu/hd.php';
         <td class="px-4 py-2 call-again">
             <button class="bg-teal-500 text-white px-2 py-1 rounded hover:bg-teal-600" onclick="callAgain('${number}')">Call Again</button>
         </td>
-      `;
+    `;
             tableBody.appendChild(row);
 
-            showMobileCallUI(number); // Show overlay
+            showMobileCallUI(number);
 
             try {
-                await new Promise(resolve => setTimeout(resolve, 1000)); // Optional delay for realism
+                await new Promise(resolve => setTimeout(resolve, 1000)); // Optional realism delay
 
                 if (callCancelled) {
                     row.querySelector('.status').innerText = 'Cancelled';
                     hideMobileCallUI();
-                    continue; // Skip to next number
+                    continue;
                 }
 
                 const response = await fetch('make_call.php', {
@@ -124,7 +200,11 @@ include 'inclu/hd.php';
             }
 
             hideMobileCallUI();
+
+            // ✅ Add 2-second delay before moving to the next number
+            await new Promise(resolve => setTimeout(resolve, 2000));
         }
+
     });
 
     function callAgain(number) {
