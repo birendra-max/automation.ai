@@ -4,10 +4,10 @@ require __DIR__ . '/Third-party/vendor/autoload.php';
 use Twilio\Jwt\AccessToken;
 use Twilio\Jwt\Grants\VoiceGrant;
 
-$accountSid = 'AC4ecb1ba7f942506281dbafac19ddd398';
-$apiKeySid = 'SKa2ae7ea7201ddfeeaff4bf3cb66201c9';
-$apiKeySecret = 'NP70531hpRPOnBpvKZGrCFRUezw65saO';
-$twimlAppSid = 'AP18b523b07ca9758eacc1d731c9c5ef7f';
+$accountSid = '';
+$apiKeySid = '';
+$apiKeySecret = '';
+$twimlAppSid = '';
 
 // Optional identity – can be anything unique per user/session
 $identity = 'Admin';
