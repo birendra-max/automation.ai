@@ -52,6 +52,35 @@ include 'inclu/hd.php';
     </div>
 </section>
 
+
+<!-- Mobile Call Popup -->
+<div id="mobilePopup" class="fixed inset-0 z-50 bg-black bg-opacity-50 hidden flex items-center justify-center">
+    <div id="mobilePopupBox" class="bg-white w-96 rounded-2xl shadow-2xl p-6 relative text-center cursor-move">
+        <!-- Close button -->
+        <button id="closePopup" class="absolute top-2 right-2 text-gray-500 hover:text-red-500 text-2xl">&times;</button>
+
+        <!-- Title -->
+        <h2 class="text-2xl font-bold text-teal-600 mb-4">Dial Your Number</h2>
+
+        <!-- Input Field -->
+        <input type="text" id="userNumberInput"
+            class="w-full px-4 py-3 border rounded-md mb-4 shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+            placeholder="Enter phone number" />
+
+        <!-- Call Button -->
+        <button id="makeCallBtn"
+            class="w-16 h-16 rounded-full bg-green-500 hover:bg-green-600 flex items-center justify-center mx-auto shadow-md">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" viewBox="0 0 20 20" fill="currentColor">
+                <path
+                    d="M2 3.5A1.5 1.5 0 013.5 2h1A1.5 1.5 0 016 3.5V5a1.5 1.5 0 01-1.5 1.5H3.5A1.5 1.5 0 012 5V3.5zM14 3.5A1.5 1.5 0 0115.5 2h1A1.5 1.5 0 0118 3.5V5a1.5 1.5 0 01-1.5 1.5h-1A1.5 1.5 0 0114 5V3.5zM2 14.5A1.5 1.5 0 013.5 13h1a1.5 1.5 0 011.5 1.5V16a1.5 1.5 0 01-1.5 1.5H3.5A1.5 1.5 0 012 16v-1.5zM14 14.5a1.5 1.5 0 011.5-1.5h1a1.5 1.5 0 011.5 1.5V16a1.5 1.5 0 01-1.5 1.5h-1A1.5 1.5 0 0114 16v-1.5z" />
+                <path
+                    d="M5.5 4h9a1.5 1.5 0 011.5 1.5v9a1.5 1.5 0 01-1.5 1.5h-9A1.5 1.5 0 014 14.5v-9A1.5 1.5 0 015.5 4z" />
+            </svg>
+        </button>
+    </div>
+</div>
+
+
 <!-- Mobile Call UI -->
 <div id="mobileCallUI" class="fixed inset-0 z-50 flex items-center justify-center hidden">
     <div id="draggableCallUI"
@@ -128,101 +157,85 @@ include 'inclu/hd.php';
     </div>
 </div>
 
-
+<!-- JavaScript -->
 <script>
-    let callCancelled = false;
+    let device;
 
-    document.getElementById('callForm').addEventListener('submit', async function(e) {
-        e.preventDefault();
+    // Load Twilio Client and get token
+    async function setupTwilioClient() {
+        try {
+            const response = await fetch('token.php');
+            const data = await response.json();
+            device = new Twilio.Device(data.token, {
+                debug: true
+            });
 
-        const input = document.getElementById('number').value.trim();
-        if (!input) return;
+            device.on('ready', () => console.log('Twilio Device Ready'));
+            device.on('error', error => alert('Twilio error: ' + error.message));
+            device.on('disconnect', () => {
+                document.getElementById('mobileCallUI').classList.add('hidden');
+                console.log('Call disconnected');
+            });
+        } catch (err) {
+            console.error('Token fetch failed:', err);
+            alert('Could not connect to Twilio');
+        }
+    }
 
-        const tableWrapper = document.getElementById('callTableWrapper');
-        tableWrapper.classList.remove('hidden');
+    // Call on page load
+    setupTwilioClient();
 
-        const numbers = input.split(',').map(num => num.trim());
-        const tableBody = document.getElementById('callTableBody');
-        tableBody.innerHTML = '';
+    // Show dial popup
+    document.getElementById('dialSelf').addEventListener('click', () => {
+        document.getElementById('mobilePopup').classList.remove('hidden');
+    });
 
-        for (let i = 0; i < numbers.length; i++) {
-            const number = numbers[i];
-            callCancelled = false;
+    // Close popup
+    document.getElementById('closePopup').addEventListener('click', () => {
+        document.getElementById('mobilePopup').classList.add('hidden');
+    });
 
-            const row = document.createElement('tr');
-            row.innerHTML = `
-        <td class="px-4 py-2">${number}</td>
-        <td class="px-4 py-2 status">Calling...</td>
-        <td class="px-4 py-2 duration">-</td>
-        <td class="px-4 py-2 recording">-</td>
-        <td class="px-4 py-2 download">-</td>
-        <td class="px-4 py-2 call-again">
-            <button class="bg-teal-500 text-white px-2 py-1 rounded hover:bg-teal-600" onclick="callAgain('${number}')">Call Again</button>
-        </td>
-    `;
-            tableBody.appendChild(row);
+    // Dial from popup
+    document.getElementById('makeCallBtn').addEventListener('click', () => {
+        const number = document.getElementById('userNumberInput').value.trim();
+        if (!number) return alert('Please enter a number');
 
-            showMobileCallUI(number);
-
-            try {
-                await new Promise(resolve => setTimeout(resolve, 1000)); // Optional realism delay
-
-                if (callCancelled) {
-                    row.querySelector('.status').innerText = 'Cancelled';
-                    hideMobileCallUI();
-                    continue;
-                }
-
-                const response = await fetch('make_call.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    },
-                    body: `number=${encodeURIComponent(number)}`
-                });
-
-                const data = await response.json();
-
-                row.querySelector('.status').innerText = data.status || 'Unknown';
-                row.querySelector('.duration').innerText = data.duration_seconds ?
-                    `${data.duration_seconds}s` : '-';
-                row.querySelector('.recording').innerHTML = data.recording_url ?
-                    `<a href="${data.recording_url}" target="_blank" class="text-blue-600 underline">Listen</a>` : 'N/A';
-                row.querySelector('.download').innerHTML = data.recording_url ?
-                    `<a href="${data.recording_url}" download class="text-green-600 underline">Download</a>` : 'N/A';
-            } catch (err) {
-                console.error('Call failed', err);
-                row.querySelector('.status').innerText = 'Error';
-            }
-
-            hideMobileCallUI();
-
-            // ✅ Add 2-second delay before moving to the next number
-            await new Promise(resolve => setTimeout(resolve, 2000));
+        if (!device || device.status() !== 'ready') {
+            return alert('Twilio Client not ready');
         }
 
+        device.connect({
+            To: number
+        });
+
+        document.getElementById('mobilePopup').classList.add('hidden');
+        document.getElementById('mobileCallUI').classList.remove('hidden');
+        document.getElementById('mobileNumberDisplay').textContent = number;
     });
 
-    function callAgain(number) {
-        alert(`Re-calling ${number}`);
-    }
+    // End call
+    document.getElementById('closeCallUI').addEventListener('click', () => {
+        if (device) device.disconnectAll();
+    });
 
-    function showMobileCallUI(number) {
-        document.getElementById('mobileNumberDisplay').textContent = number;
+    // Optional form for direct call
+    document.getElementById('callForm').addEventListener('submit', e => {
+        e.preventDefault();
+        const number = document.getElementById('number').value.trim();
+        if (!number) return alert('Please enter a phone number');
+
+        if (!device || device.status() !== 'ready') {
+            return alert('Twilio Client not ready');
+        }
+
+        device.connect({
+            To: number
+        });
+
         document.getElementById('mobileCallUI').classList.remove('hidden');
-    }
-
-    function hideMobileCallUI() {
-        document.getElementById('mobileCallUI').classList.add('hidden');
-    }
-
-    // When user clicks "End Call"
-    document.getElementById('closeCallUI').addEventListener('click', function() {
-        callCancelled = true;
-        hideMobileCallUI();
+        document.getElementById('mobileNumberDisplay').textContent = number;
     });
 </script>
-
 
 <!-- move calling interface in screen  -->
 <script>
@@ -265,5 +278,56 @@ include 'inclu/hd.php';
     window.addEventListener('DOMContentLoaded', () => {
         const draggableBox = document.getElementById("draggableCallUI");
         makeElementDraggable(draggableBox);
+    });
+</script>
+
+
+<!-- Dile you number  -->
+<script>
+    // Show popup
+    document.getElementById("dialSelf").addEventListener("click", () => {
+        document.getElementById("mobilePopup").classList.remove("hidden");
+    });
+
+    // Close popup
+    document.getElementById("closePopup").addEventListener("click", () => {
+        document.getElementById("mobilePopup").classList.add("hidden");
+    });
+
+    // Call via AJAX
+    document.getElementById("makeCallBtn").addEventListener("click", () => {
+        const number = document.getElementById("userNumberInput").value.trim();
+        if (!number) {
+            alert("Please enter a phone number.");
+            return;
+        }
+
+        // Disable button while calling
+        const callBtn = document.getElementById("makeCallBtn");
+        callBtn.disabled = true;
+        callBtn.classList.add("opacity-50");
+
+        // AJAX call
+        fetch("make_call.php", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: "number=" + encodeURIComponent(number)
+            })
+            .then(res => res.text())
+            .then(data => {
+                alert("Call initiated successfully!");
+                document.getElementById("mobilePopup").classList.add("hidden");
+                document.getElementById("userNumberInput").value = "";
+            })
+            .catch(err => {
+                alert("Call failed. Try again.");
+                console.error(err);
+            })
+            .finally(() => {
+                callBtn.disabled = false;
+                callBtn.classList.remove("opacity-50");
+            });
     });
 </script>
