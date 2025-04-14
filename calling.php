@@ -54,9 +54,8 @@ include 'inclu/hd.php';
 
 <!-- Mobile Call UI -->
 <div id="mobileCallUI" class="fixed inset-0 z-50 flex items-center justify-center hidden">
-    <div
-        class="w-[30%] h-[50%] bg-[#1a1a1a] text-white rounded-2xl shadow-2xl flex flex-col items-center justify-between py-10 px-8">
-
+    <div id="draggableCallUI"
+        class="w-[30%] h-[50%] bg-[#1a1a1a] text-white rounded-2xl shadow-2xl flex flex-col items-center justify-between py-10 px-8 cursor-move absolute">
         <!-- Caller Info -->
         <div class="flex flex-col items-center">
             <div class="w-28 h-28 rounded-full bg-teal-600 flex items-center justify-center mb-6 shadow-lg">
@@ -113,7 +112,6 @@ include 'inclu/hd.php';
             </button>
         </div>
 
-
         <!-- End Call -->
         <div class="mt-6">
             <button id="closeCallUI"
@@ -129,8 +127,6 @@ include 'inclu/hd.php';
         </div>
     </div>
 </div>
-
-
 
 
 <script>
@@ -224,5 +220,50 @@ include 'inclu/hd.php';
     document.getElementById('closeCallUI').addEventListener('click', function() {
         callCancelled = true;
         hideMobileCallUI();
+    });
+</script>
+
+
+<!-- move calling interface in screen  -->
+<script>
+    function makeElementDraggable(elmnt) {
+        let pos1 = 0,
+            pos2 = 0,
+            pos3 = 0,
+            pos4 = 0;
+
+        elmnt.onmousedown = dragMouseDown;
+
+        function dragMouseDown(e) {
+            e = e || window.event;
+            e.preventDefault();
+            pos3 = e.clientX;
+            pos4 = e.clientY;
+            document.onmouseup = closeDragElement;
+            document.onmousemove = elementDrag;
+        }
+
+        function elementDrag(e) {
+            e = e || window.event;
+            e.preventDefault();
+            pos1 = pos3 - e.clientX;
+            pos2 = pos4 - e.clientY;
+            pos3 = e.clientX;
+            pos4 = e.clientY;
+
+            elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+            elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+        }
+
+        function closeDragElement() {
+            document.onmouseup = null;
+            document.onmousemove = null;
+        }
+    }
+
+    // Enable dragging for the mobile call UI box
+    window.addEventListener('DOMContentLoaded', () => {
+        const draggableBox = document.getElementById("draggableCallUI");
+        makeElementDraggable(draggableBox);
     });
 </script>

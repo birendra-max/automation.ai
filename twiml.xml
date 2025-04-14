@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Response>
-  <Say>Connecting call now.</Say>
-  <Dial record="record-from-answer-dual">+15558675310</Dial>
+    <Say voice="alice">Hello! This is an automated message.</Say>
 </Response>
