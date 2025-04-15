@@ -1,16 +1,27 @@
 <?php
+session_start();
 header('Content-Type: text/xml');
-require __DIR__ . '/Third-party/vendor/autoload.php';
 
-use Twilio\TwiML\VoiceResponse;
+$callerId = '+16505907520';
+$to = $_REQUEST['To'] ?? '';
 
-$response = new VoiceResponse();
+echo '<?xml version="1.0" encoding="UTF-8"?>';
+?>
 
-if (isset($_POST['To'])) {
-    $dial = $response->dial('', ['callerId' => '+16505907520']);
-    $dial->number($_POST['To']);
-} else {
-    $response->say("Thank you for calling.");
-}
+<Response>
+    <?php if (!empty($to)): ?>
+        <Dial callerId="<?= htmlspecialchars($callerId) ?>">
+            <?php if (preg_match('/^[\d\+\-\(\) ]+$/', $to)): ?>
+                <Number><?= htmlspecialchars($to) ?></Number>
+            <?php else: ?>
+                <Client><?= htmlspecialchars($to) ?></Client>
+            <?php endif; ?>
+        </Dial>
+    <?php else: ?>
+        <Dial>
+            <!-- This identity must match what your browser client uses -->
+            <Client>admin</Client>
+        </Dial>
+    <?php endif; ?>
+</Response>
 
-echo $response;

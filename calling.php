@@ -6,6 +6,8 @@
 include 'inclu/hd.php';
 ?>
 
+<script src="public/js/uidraggable.js"></script>
+
 
 <!-- UI + Table Section -->
 <section class="max-w-8xl mx-auto bg-white border border-gray-300 shadow-lg rounded-lg p-8 mt-2">
@@ -55,7 +57,7 @@ include 'inclu/hd.php';
 
 <!-- Mobile Call Popup -->
 <div id="mobilePopup" class="fixed inset-0 z-50 bg-black bg-opacity-50 hidden flex items-center justify-center">
-    <div id="mobilePopupBox" class="bg-white w-96 rounded-2xl shadow-2xl p-6 relative text-center cursor-move">
+    <div id="mobilePopupBox" class="bg-white w-72 rounded-2xl shadow-2xl p-6 relative text-center cursor-move">
         <!-- Close button -->
         <button id="closePopup" class="absolute top-2 right-2 text-gray-500 hover:text-red-500 text-2xl">&times;</button>
 
@@ -84,7 +86,7 @@ include 'inclu/hd.php';
 <!-- Mobile Call UI -->
 <div id="mobileCallUI" class="fixed inset-0 z-50 flex items-center justify-center hidden">
     <div id="draggableCallUI"
-        class="w-[30%] h-[50%] bg-[#1a1a1a] text-white rounded-2xl shadow-2xl flex flex-col items-center justify-between py-10 px-8 cursor-move absolute">
+        class="w-[20%] h-[50%] bg-[#1a1a1a] text-white rounded-2xl shadow-2xl flex flex-col items-center justify-between py-10 px-8 cursor-move absolute">
         <!-- Caller Info -->
         <div class="flex flex-col items-center">
             <div class="w-28 h-28 rounded-full bg-teal-600 flex items-center justify-center mb-6 shadow-lg">
@@ -157,15 +159,15 @@ include 'inclu/hd.php';
     </div>
 </div>
 
-<!-- JavaScript -->
 <script>
     let device;
+    let currentConnection = null;
 
-    // Load Twilio Client and get token
     async function setupTwilioClient() {
         try {
             const response = await fetch('token.php');
             const data = await response.json();
+
             device = new Twilio.Device(data.token, {
                 debug: true
             });
@@ -176,69 +178,107 @@ include 'inclu/hd.php';
                 document.getElementById('mobileCallUI').classList.add('hidden');
                 console.log('Call disconnected');
             });
+
+            device.on('connect', conn => {
+                console.log('Call connected:', conn.parameters);
+                document.getElementById('mobileCallUI').classList.remove('hidden');
+                document.getElementById('mobilePopup').classList.add('hidden');
+                currentConnection = conn;
+            });
+
+            // Handle incoming calls
+            device.on('incoming', (connection) => {
+                console.log('Incoming call from: ', connection.parameters.From);
+                document.getElementById('mobileCallUI').classList.remove('hidden');
+                document.getElementById('mobileNumberDisplay').textContent = connection.parameters.From;
+                currentConnection = connection;
+            });
+
         } catch (err) {
             console.error('Token fetch failed:', err);
             alert('Could not connect to Twilio');
         }
     }
 
-    // Call on page load
     setupTwilioClient();
 
-    // Show dial popup
-    document.getElementById('dialSelf').addEventListener('click', () => {
-        document.getElementById('mobilePopup').classList.remove('hidden');
+    // Show popup for dialing your own number
+    document.getElementById("dialSelf").addEventListener("click", () => {
+        document.getElementById("mobilePopup").classList.remove("hidden");
     });
 
-    // Close popup
-    document.getElementById('closePopup').addEventListener('click', () => {
-        document.getElementById('mobilePopup').classList.add('hidden');
+    // Close the dial popup
+    document.getElementById("closePopup").addEventListener("click", () => {
+        document.getElementById("mobilePopup").classList.add("hidden");
     });
 
-    // Dial from popup
-    document.getElementById('makeCallBtn').addEventListener('click', () => {
-        const number = document.getElementById('userNumberInput').value.trim();
-        if (!number) return alert('Please enter a number');
+    // Call from popup using Twilio Client
+    document.getElementById("makeCallBtn").addEventListener("click", () => {
+        const number = document.getElementById("userNumberInput").value.trim();
+        if (!number) {
+            alert("Please enter a phone number.");
+            return;
+        }
 
+        const finalNumber = formatNumber(number);
         if (!device || device.status() !== 'ready') {
             return alert('Twilio Client not ready');
         }
 
+        // Initiate outbound call via Twilio Client
         device.connect({
-            To: number
+            To: finalNumber
         });
+        document.getElementById('mobileNumberDisplay').textContent = finalNumber;
+    });
 
-        document.getElementById('mobilePopup').classList.add('hidden');
-        document.getElementById('mobileCallUI').classList.remove('hidden');
-        document.getElementById('mobileNumberDisplay').textContent = number;
+    // Call from form textarea
+    document.getElementById("callForm").addEventListener("submit", e => {
+        e.preventDefault();
+        const number = document.getElementById("number").value.trim();
+        if (!number) return alert("Enter a phone number");
+
+        const finalNumber = formatNumber(number);
+
+        if (!device || device.status() !== 'ready') {
+            return alert("Twilio Client not ready");
+        }
+
+        device.connect({
+            To: finalNumber
+        });
+        document.getElementById('mobileNumberDisplay').textContent = finalNumber;
     });
 
     // End call
-    document.getElementById('closeCallUI').addEventListener('click', () => {
+    document.getElementById("closeCallUI").addEventListener("click", () => {
+        if (currentConnection) currentConnection.disconnect();
         if (device) device.disconnectAll();
     });
 
-    // Optional form for direct call
-    document.getElementById('callForm').addEventListener('submit', e => {
-        e.preventDefault();
-        const number = document.getElementById('number').value.trim();
-        if (!number) return alert('Please enter a phone number');
-
-        if (!device || device.status() !== 'ready') {
-            return alert('Twilio Client not ready');
+    // Answer an incoming call
+    document.getElementById("answerCall").addEventListener("click", () => {
+        if (currentConnection) {
+            currentConnection.accept();
+        } else {
+            alert("No incoming call to answer.");
         }
-
-        device.connect({
-            To: number
-        });
-
-        document.getElementById('mobileCallUI').classList.remove('hidden');
-        document.getElementById('mobileNumberDisplay').textContent = number;
     });
-</script>
 
-<!-- move calling interface in screen  -->
-<script>
+    // End call (answering the call)
+    document.getElementById("closeCallUI").addEventListener("click", () => {
+        if (device) device.disconnectAll();
+    });
+
+    function formatNumber(num) {
+        let formatted = num.replace(/\s+/g, '');
+        if (!formatted.startsWith('+')) {
+            formatted = '+' + formatted;
+        }
+        return formatted;
+    }
+
+    // Dragging functionality
     function makeElementDraggable(elmnt) {
         let pos1 = 0,
             pos2 = 0,
@@ -263,7 +303,6 @@ include 'inclu/hd.php';
             pos2 = pos4 - e.clientY;
             pos3 = e.clientX;
             pos4 = e.clientY;
-
             elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
             elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
         }
@@ -274,7 +313,6 @@ include 'inclu/hd.php';
         }
     }
 
-    // Enable dragging for the mobile call UI box
     window.addEventListener('DOMContentLoaded', () => {
         const draggableBox = document.getElementById("draggableCallUI");
         makeElementDraggable(draggableBox);
@@ -282,52 +320,4 @@ include 'inclu/hd.php';
 </script>
 
 
-<!-- Dile you number  -->
-<script>
-    // Show popup
-    document.getElementById("dialSelf").addEventListener("click", () => {
-        document.getElementById("mobilePopup").classList.remove("hidden");
-    });
 
-    // Close popup
-    document.getElementById("closePopup").addEventListener("click", () => {
-        document.getElementById("mobilePopup").classList.add("hidden");
-    });
-
-    // Call via AJAX
-    document.getElementById("makeCallBtn").addEventListener("click", () => {
-        const number = document.getElementById("userNumberInput").value.trim();
-        if (!number) {
-            alert("Please enter a phone number.");
-            return;
-        }
-
-        // Disable button while calling
-        const callBtn = document.getElementById("makeCallBtn");
-        callBtn.disabled = true;
-        callBtn.classList.add("opacity-50");
-
-        // AJAX call
-        fetch("make_call.php", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded"
-                },
-                body: "number=" + encodeURIComponent(number)
-            })
-            .then(res => res.text())
-            .then(data => {
-                alert("Call initiated successfully!");
-                document.getElementById("mobilePopup").classList.add("hidden");
-                document.getElementById("userNumberInput").value = "";
-            })
-            .catch(err => {
-                alert("Call failed. Try again.");
-                console.error(err);
-            })
-            .finally(() => {
-                callBtn.disabled = false;
-                callBtn.classList.remove("opacity-50");
-            });
-    });
-</script>

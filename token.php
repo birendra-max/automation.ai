@@ -1,18 +1,26 @@
 <?php
+
+session_start();
+
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 require __DIR__ . '/Third-party/vendor/autoload.php';
 
 use Twilio\Jwt\AccessToken;
 use Twilio\Jwt\Grants\VoiceGrant;
 
-$accountSid = '';
-$apiKeySid = '';
-$apiKeySecret = '';
-$twimlAppSid = '';
+// Use fallback identity if session value is not set
+$identity = $_SESSION['user_details']['role'] ?? 'anonymous';
 
-// Optional identity – can be anything unique per user/session
-$identity = 'Admin';
+// ✅ Use the actual strings (not getenv)
+$accountSid     = 'AC4ecb1ba7f942506281dbafac19ddd398';
+$apiKeySid      = 'SKa2ae7ea7201ddfeeaff4bf3cb66201c9';
+$apiKeySecret   = 'NP70531hpRPOnBpvKZGrCFRUezw65saO';
+$twimlAppSid    = 'AP18b523b07ca9758eacc1d731c9c5ef7f';
 
-// Create access token
+// Generate the token
 $token = new AccessToken(
     $accountSid,
     $apiKeySid,
@@ -21,11 +29,15 @@ $token = new AccessToken(
     $identity
 );
 
-// Grant voice access
 $voiceGrant = new VoiceGrant();
 $voiceGrant->setOutgoingApplicationSid($twimlAppSid);
+$voiceGrant->setIncomingAllow(true);
+
 $token->addGrant($voiceGrant);
 
-// Return token as JSON
+// Output token
 header('Content-Type: application/json');
-echo json_encode(['token' => $token->toJWT()]);
+echo json_encode([
+    'identity' => $identity,
+    'token' => $token->toJWT()
+]);
