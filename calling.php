@@ -1,5 +1,5 @@
 <script>
-    document.title = 'Auto Calling';
+    document.title = 'Mail Automation | AI';
 </script>
 
 <?php
