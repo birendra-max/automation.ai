@@ -22,7 +22,7 @@
     <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.js"></script>
 
     <script src="https://media.twiliocdn.com/sdk/js/client/v1.13/twilio.min.js"></script>
-    <script src="../public/js/uidraggable.js"></script>
+    
 
     <style>
         #editor {
