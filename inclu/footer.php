@@ -41,6 +41,12 @@
     } else {
         document.getElementById('calling').classList.remove('bg-gray-700');
     }
+
+    if (title == 'Call Schudle') {
+        document.getElementById('call_schudle').classList.add('bg-gray-700');
+    } else {
+        document.getElementById('call_schudle').classList.remove('bg-gray-700');
+    }
 </script>
 
 </body>

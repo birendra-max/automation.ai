@@ -1,5 +1,5 @@
 <script>
-    document.title = 'Mail Automation | AI';
+    document.title = 'Auto Calling';
 </script>
 
 <?php
@@ -321,3 +321,9 @@ include 'inclu/hd.php';
 
 
 
+
+
+
+<?php
+include 'inclu/footer.php';
+?>
