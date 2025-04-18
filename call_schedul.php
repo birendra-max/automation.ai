@@ -10,7 +10,6 @@ include 'inclu/hd.php';
 
 
 <section class="max-w-8xl mx-auto bg-white border border-gray-300 shadow-lg rounded-lg p-8 mt-2">
-
     <!-- Mobile Call UI -->
     <div id="mobileCallUI" class="fixed inset-0 z-50 flex items-center justify-center hidden">
         <div id="draggableCallUI"
@@ -78,34 +77,74 @@ include 'inclu/hd.php';
 
     <!-- Table Section -->
     <div id="recordsTable" class="mt-8 hidden">
-        <h3 class="text-lg font-semibold mb-4">Uploaded Records</h3>
-        <table class="w-full text-left border border-gray-300 rounded-lg overflow-hidden">
-            <thead class="bg-gray-100">
-                <tr>
-                    <th class="px-4 py-2 border">Number</th>
-                    <th class="px-4 py-2 border">Lab Name</th>
-                    <th class="px-4 py-2 border">Status</th>
-                    <th class="px-4 py-2 border">Call</th>
-                </tr>
-            </thead>
-            <tbody id="tableBody"></tbody>
-        </table>
-        <div id="pagination" class="flex justify-center space-x-2 mt-4"></div>
+        <div class="flex justify-between items-center mb-4">
+            <div class="flex items-center space-x-4">
+                <button id="selectAllBtn" class="text-gray-700 font-semibold bg-white border border-gray-300 rounded-lg px-4 py-2 hover:bg-gray-100">
+                    Select All
+                </button>
+                <button class="text-gray-700 font-semibold bg-white border border-gray-300 rounded-lg px-4 py-2 hover:bg-gray-100">
+                    Call
+                </button>
+            </div>
+            <div class="text-sm text-gray-500">
+                <span id="email-count">1-50 of 1500</span>
+            </div>
+        </div>
+
+        <!-- Emails Table (same as before) -->
+        <div class="overflow-x-auto bg-white shadow-lg rounded-lg">
+            <table class="min-w-full table-auto border-collapse">
+                <thead class="bg-gray-200">
+                    <tr>
+                        <th class="py-3 px-4 text-left text-sm font-medium text-gray-600">
+                            <input type="checkbox" id="select-all-checkbox" class="form-checkbox text-blue-600" />
+                        </th>
+                        <th class="py-3 px-4 text-left text-sm font-medium text-gray-600">Number</th>
+                        <th class="py-3 px-4 text-left text-sm font-medium text-gray-600">Lab Name</th>
+                        <th class="py-3 px-4 text-left text-sm font-medium text-gray-600">Status</th>
+                        <th class="py-3 px-4 text-left text-sm font-medium text-gray-600">Call</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <!-- Email rows will be dynamically inserted here -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="flex justify-between items-center mt-6">
+            <div class="text-sm text-gray-600">
+                <span id="pagination-info">1-50 of 1500</span>
+            </div>
+            <div class="space-x-4">
+                <button class="px-4 py-2 text-sm text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300" id="prev-btn">
+                    Previous
+                </button>
+                <button class="px-4 py-2 text-sm text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300" id="next-btn">
+                    Next
+                </button>
+            </div>
+        </div>
     </div>
 </section>
 
 <script>
     let device;
     let currentConnection = null;
-    
-    // Ensure these elements exist in your HTML
-    const fileInput = document.getElementById('fileInput'); // Define fileInput element
-    const successMessage = document.getElementById('success-message'); // Define successMessage element
-    const errorMessage = document.getElementById('error-message'); // Define errorMessage element
+    let currentPage = 1; // Track the current page number
+
+    const fileInput = document.getElementById('fileInput');
+    const successMessage = document.getElementById('success-message');
+    const errorMessage = document.getElementById('error-message');
+
+    const selectAllCheckbox = document.getElementById('select-all-checkbox');
+    const selectAllBtn = document.getElementById('selectAllBtn');
+    const prevBtn = $('#prev-btn');
+    const nextBtn = $('#next-btn');
 
     window.onload = () => {
         setupTwilioClient();
-        loadRecords(1);
+        loadRecords(currentPage);
     };
 
     fileInput.addEventListener('change', () => {
@@ -125,9 +164,7 @@ include 'inclu/hd.php';
                 successMessage.classList.remove('hidden');
 
                 const fileName = fileInput.files[0].name;
-
                 $('#success-message').text(`File "${fileName}" uploaded successfully`);
-
                 loadRecords(1);
             },
             error: function(xhr, status, error) {
@@ -135,8 +172,8 @@ include 'inclu/hd.php';
                 errorMessage.classList.remove('hidden');
             }
         });
-
     });
+
 
     function loadRecords(page = 1) {
         $.ajax({
@@ -147,44 +184,95 @@ include 'inclu/hd.php';
             },
             dataType: 'json',
             success: function(data) {
-                console.log('Fetched records:', data); // Debugging the fetched data
+                console.log('Fetched records:', data);
 
                 const tbody = $('#tableBody');
                 tbody.html('');
 
                 if (!data.records || data.records.length === 0) {
-                    tbody.html('<tr><td colspan="4" class="text-center p-4">No records found.</td></tr>');
+                    tbody.html('<tr><td colspan="5" class="text-center p-4">No records found.</td></tr>');
                     return;
                 }
 
                 data.records.forEach(row => {
                     tbody.append(`
-                    <tr>
-                        <td class="border px-4 py-2">${row.phno}</td>
-                        <td class="border px-4 py-2">${row.lab_name}</td>
-                        <td class="border px-4 py-2">${row.status || 'Pending'}</td>
-                        <td class="border px-4 py-2 text-center">
-                            <button class="text-indigo-600 hover:text-indigo-900" onclick="callNow('${row.phno}')">
-                                <i class="fas fa-phone"></i>
-                            </button>
-                        </td>
-                    </tr>`);
+            <tr>
+                <td class="border px-4 py-2">
+                    <input type="checkbox" class="form-checkbox text-blue-600" />
+                </td>
+                <td class="border px-4 py-2">${row.phno}</td>
+                <td class="border px-4 py-2">${row.lab_name}</td>
+                <td class="border px-4 py-2">${row.status || 'Pending'}</td>
+                <td class="border px-4 py-2 text-center">
+                    <button class="text-indigo-600 hover:text-indigo-900" onclick="callNow('${row.phno}')">
+                        <i class="fas fa-phone"></i>
+                    </button>
+                </td>
+            </tr>`);
                 });
 
                 $('#recordsTable').removeClass('hidden');
+                updatePagination(data);
 
-                const pagination = $('#pagination');
-                pagination.html('');
-                for (let i = 1; i <= data.totalPages; i++) {
-                    pagination.append(`<button class="px-3 py-1 border ${i === data.currentPage ? 'bg-indigo-500 text-white' : 'bg-white'}" onclick="loadRecords(${i})">${i}</button>`);
-                }
+                // Handle pagination buttons
+                prevBtn.off('click').on('click', () => loadRecords(data.currentPage - 1));
+                nextBtn.off('click').on('click', () => loadRecords(data.currentPage + 1));
             },
             error: function(xhr, status, error) {
                 console.error('Fetch error:', error);
-                $('#tableBody').html(`<tr><td colspan="4" class="text-center p-4 text-red-500">Failed to load data.</td></tr>`);
+                $('#tableBody').html(`<tr><td colspan="5" class="text-center p-4 text-red-500">Failed to load data.</td></tr>`);
             }
         });
     }
+
+
+    function updatePagination(data) {
+        const paginationInfo = $('#pagination-info');
+        paginationInfo.html(`Showing ${data.records.length} of ${data.totalCount} records`);
+
+        const prevBtn = $('#prev-btn');
+        const nextBtn = $('#next-btn');
+
+        // Disable Previous button if on the first page
+        const isPrevDisabled = data.currentPage === 1;
+        prevBtn.prop('disabled', isPrevDisabled);
+        prevBtn.toggleClass('cursor-not-allowed opacity-50', isPrevDisabled);
+        prevBtn.toggleClass('cursor-pointer opacity-100', !isPrevDisabled);
+
+        // Disable Next button if on the last page
+        const isNextDisabled = data.currentPage === data.totalPages;
+        nextBtn.prop('disabled', isNextDisabled);
+        nextBtn.toggleClass('cursor-not-allowed opacity-50', isNextDisabled);
+        nextBtn.toggleClass('cursor-pointer opacity-100', !isNextDisabled);
+
+        // Prevent click action when Previous button is disabled
+        prevBtn.off('click');
+        if (!isPrevDisabled) {
+            prevBtn.on('click', () => loadRecords(data.currentPage - 1)); // Enable action if not disabled
+        }
+
+        // Prevent click action when Next button is disabled
+        nextBtn.off('click');
+        if (!isNextDisabled) {
+            nextBtn.on('click', () => loadRecords(data.currentPage + 1)); // Enable action if not disabled
+        }
+
+        // Update pagination text to show current page
+        const paginationText = `Page ${data.currentPage} of ${data.totalPages}`;
+        $('#pagination-info').text(paginationText);
+    }
+
+
+
+    selectAllBtn.addEventListener('click', () => {
+        const checkboxes = document.querySelectorAll('.form-checkbox');
+        checkboxes.forEach(checkbox => checkbox.checked = !checkbox.checked);
+    });
+
+    selectAllCheckbox.addEventListener('change', () => {
+        const checkboxes = document.querySelectorAll('.form-checkbox');
+        checkboxes.forEach(checkbox => checkbox.checked = selectAllCheckbox.checked);
+    });
 
     function callNow(number) {
         const finalNumber = formatNumber(number);
@@ -244,11 +332,13 @@ include 'inclu/hd.php';
     }
 
     function endCurrentCall() {
-        if (currentConnection) currentConnection.disconnect();
+        if (currentConnection) {
+            currentConnection.disconnect();
+            currentConnection = null;
+        }
         $('#mobileCallUI').addClass('hidden');
     }
 </script>
-
 
 
 

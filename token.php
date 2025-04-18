@@ -15,11 +15,15 @@ use Twilio\Jwt\Grants\VoiceGrant;
 $identity = $_SESSION['user_details']['role'] ?? 'anonymous';
 
 // ✅ Use the actual strings (not getenv)
-$accountSid     = '';
-$apiKeySid      = '';
-$apiKeySecret   = '';
-$twimlAppSid    = '';
+// $accountSid     = '';
+// $apiKeySid      = '';
+// $apiKeySecret   = '';
+// $twimlAppSid    = '';
 
+$accountSid     = 'AC4ecb1ba7f942506281dbafac19ddd398';
+$apiKeySid      = 'SKa2ae7ea7201ddfeeaff4bf3cb66201c9';
+$apiKeySecret   = 'NP70531hpRPOnBpvKZGrCFRUezw65saO';
+$twimlAppSid    = 'AP18b523b07ca9758eacc1d731c9c5ef7f';
 // Generate the token
 $token = new AccessToken(
     $accountSid,
