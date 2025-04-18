@@ -1,9 +1,9 @@
 <?php
 require 'inclu/config.php';
 
-// Get the page number (default is 1)
+// Get the page number (default is 1) and records per page (limit)
 $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
-$limit = 10;  // Number of records per page
+$limit = isset($_GET['limit']) ? intval($_GET['limit']) : 10;  // Default limit is 10
 $offset = ($page - 1) * $limit;  // Calculate the offset for SQL query
 
 // Get the total count of records

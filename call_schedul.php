@@ -82,12 +82,26 @@ include 'inclu/hd.php';
                 <button id="selectAllBtn" class="text-gray-700 font-semibold bg-white border border-gray-300 rounded-lg px-4 py-2 hover:bg-gray-100">
                     Select All
                 </button>
-                <button class="text-gray-700 font-semibold bg-white border border-gray-300 rounded-lg px-4 py-2 hover:bg-gray-100">
-                    Call
+                <button class="text-green-700 font-semibold bg-white border border-gray-300 rounded-lg px-4 py-2 hover:bg-green-100">
+                    Call Start
+                </button>
+
+                <button class="text-red-700 font-semibold bg-white border border-gray-300 rounded-lg px-4 py-2 hover:bg-red-100">
+                    Call End
                 </button>
             </div>
             <div class="text-sm text-gray-500">
-                <span id="email-count">1-50 of 1500</span>
+                <div class="text-sm text-gray-600 flex items-center space-x-4">
+                    <span>Show:</span>
+                    <select id="recordsPerPage" class="bg-white border border-gray-300 rounded-lg p-2 text-sm" onchange="loadRecords(1)">
+                        <option value="10" selected>10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                        <option value="500">500</option>
+                    </select>
+                    <span>records per page</span>
+                </div>
             </div>
         </div>
 
@@ -174,13 +188,24 @@ include 'inclu/hd.php';
         });
     });
 
+    const recordsPerPageSelect = document.getElementById('records-per-page');
+    let recordsPerPage = parseInt(recordsPerPageSelect.value); // Default to 10 records per page
 
+    recordsPerPageSelect.addEventListener('change', function() {
+        recordsPerPage = parseInt(this.value); // Get the selected value
+        loadRecords(1); // Reload records with the new page number and limit
+    });
+
+    // Function to load records with the selected limit
     function loadRecords(page = 1) {
+        const limit = document.getElementById('recordsPerPage').value; // Get the selected limit
+
         $.ajax({
             url: 'fetch_call_records.php',
             type: 'GET',
             data: {
-                page: page
+                page: page,
+                limit: limit // Pass the limit to the server
             },
             dataType: 'json',
             success: function(data) {
@@ -196,27 +221,43 @@ include 'inclu/hd.php';
 
                 data.records.forEach(row => {
                     tbody.append(`
-            <tr>
-                <td class="border px-4 py-2">
-                    <input type="checkbox" class="form-checkbox text-blue-600" />
-                </td>
-                <td class="border px-4 py-2">${row.phno}</td>
-                <td class="border px-4 py-2">${row.lab_name}</td>
-                <td class="border px-4 py-2">${row.status || 'Pending'}</td>
-                <td class="border px-4 py-2 text-center">
-                    <button class="text-indigo-600 hover:text-indigo-900" onclick="callNow('${row.phno}')">
-                        <i class="fas fa-phone"></i>
-                    </button>
-                </td>
-            </tr>`);
+                <tr>
+                    <td class="border px-4 py-2">
+                        <input type="checkbox" class="form-checkbox text-blue-600" />
+                    </td>
+                    <td class="border px-4 py-2">${row.phno}</td>
+                    <td class="border px-4 py-2">${row.lab_name}</td>
+                    <td class="border px-4 py-2">${row.status || 'Pending'}</td>
+                    <td class="border px-4 py-2 text-center">
+                        <button class="text-indigo-600 hover:text-indigo-900" onclick="callNow('${row.phno}')">
+                            <i class="fas fa-phone"></i>
+                        </button>
+                    </td>
+                </tr>`);
                 });
 
                 $('#recordsTable').removeClass('hidden');
-                updatePagination(data);
+                updatePagination(data, limit);
 
                 // Handle pagination buttons
                 prevBtn.off('click').on('click', () => loadRecords(data.currentPage - 1));
                 nextBtn.off('click').on('click', () => loadRecords(data.currentPage + 1));
+
+                // Select All checkbox event
+                $('#select-all-checkbox').change(function() {
+                    const isChecked = $(this).prop('checked');
+                    const checkboxes = $('#tableBody input[type="checkbox"]');
+                    checkboxes.prop('checked', isChecked);
+                });
+
+                selectAllBtn.addEventListener('click', () => {
+                    const checkboxes = $('#tableBody input[type="checkbox"]');
+                    const isChecked = checkboxes.length && checkboxes.not(':checked').length === 0;
+
+                    // If all checkboxes are already selected, unselect them; otherwise, select them all
+                    checkboxes.prop('checked', !isChecked);
+                    $('#select-all-checkbox').prop('checked', !isChecked); // Update the select-all header checkbox
+                });
             },
             error: function(xhr, status, error) {
                 console.error('Fetch error:', error);
@@ -225,8 +266,8 @@ include 'inclu/hd.php';
         });
     }
 
-
-    function updatePagination(data) {
+    // Update pagination information and disable buttons accordingly
+    function updatePagination(data, limit) {
         const paginationInfo = $('#pagination-info');
         paginationInfo.html(`Showing ${data.records.length} of ${data.totalCount} records`);
 
@@ -261,18 +302,6 @@ include 'inclu/hd.php';
         const paginationText = `Page ${data.currentPage} of ${data.totalPages}`;
         $('#pagination-info').text(paginationText);
     }
-
-
-
-    selectAllBtn.addEventListener('click', () => {
-        const checkboxes = document.querySelectorAll('.form-checkbox');
-        checkboxes.forEach(checkbox => checkbox.checked = !checkbox.checked);
-    });
-
-    selectAllCheckbox.addEventListener('change', () => {
-        const checkboxes = document.querySelectorAll('.form-checkbox');
-        checkboxes.forEach(checkbox => checkbox.checked = selectAllCheckbox.checked);
-    });
 
     function callNow(number) {
         const finalNumber = formatNumber(number);
