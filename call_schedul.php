@@ -283,8 +283,8 @@ include 'inclu/hd.php';
             return;
         }
 
-        $('#mobileNumberDisplay').text(number); // ✅ Show number on UI
-        $('#mobileCallUI').removeClass('hidden'); // ✅ Show the call UI
+        $('#mobileNumberDisplay').text(number);
+        $('#mobileCallUI').removeClass('hidden');
 
         const connection = device.connect({
             To: number
@@ -293,15 +293,14 @@ include 'inclu/hd.php';
 
         connection.on('disconnect', () => {
             currentConnection = null;
-            $('#mobileCallUI').addClass('hidden'); // ✅ Hide UI after disconnect
+            $('#mobileCallUI').addClass('hidden');
 
             if (bulkNumbers.length > 0 && bulkCallIndex < bulkNumbers.length - 1) {
                 bulkCallIndex++;
 
-                // ✅ Wait 2-3 seconds before next call
                 setTimeout(() => {
                     startNextCall();
-                }, 2500); // Adjust the delay (in milliseconds) here
+                }, 2500);
             } else {
                 bulkNumbers = [];
                 bulkCallIndex = 0;
