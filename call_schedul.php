@@ -295,9 +295,23 @@ include 'inclu/hd.php';
             currentConnection = null;
             $('#mobileCallUI').addClass('hidden');
 
+            // AJAX to update status
+            $.ajax({
+                url: 'update_call_status.php',
+                type: 'POST',
+                data: {
+                    phone_number: number // send the phone number that was just called
+                },
+                success: function(response) {
+                    console.log('Status updated:', response);
+                },
+                error: function() {
+                    console.error('Failed to update call status');
+                }
+            });
+
             if (bulkNumbers.length > 0 && bulkCallIndex < bulkNumbers.length - 1) {
                 bulkCallIndex++;
-
                 setTimeout(() => {
                     startNextCall();
                 }, 2500);
@@ -306,6 +320,7 @@ include 'inclu/hd.php';
                 bulkCallIndex = 0;
             }
         });
+
     }
 
     function setupTwilioClient() {
