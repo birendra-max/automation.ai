@@ -145,12 +145,48 @@ include 'inclu/hd.php';
     let bulkNumbers = [];
     let bulkCallIndex = 0;
 
-    let recordsPerPage = parseInt(document.getElementById('recordsPerPage').value);
+    const fileInput = document.getElementById('fileInput');
+    const successMessage = document.getElementById('success-message');
+    const errorMessage = document.getElementById('error-message');
+
+    const selectAllBtn = document.getElementById('selectAllBtn');
+    const prevBtn = $('#prev-btn');
+    const nextBtn = $('#next-btn');
+    const recordsPerPageSelect = document.getElementById('recordsPerPage');
+    let recordsPerPage = parseInt(recordsPerPageSelect.value);
 
     window.onload = () => {
         setupTwilioClient();
         loadRecords(currentPage);
     };
+
+    // Upload file
+    fileInput.addEventListener('change', () => {
+        const formData = new FormData();
+        formData.append('fileInput', fileInput.files[0]);
+
+        $.ajax({
+            url: 'read_excl_date.php',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(data) {
+                const fileName = fileInput.files[0].name;
+                $('#success-message').text(`File "${fileName}" uploaded successfully`).removeClass('hidden');
+                $('#error-message').addClass('hidden');
+                loadRecords(1);
+            },
+            error: function() {
+                $('#error-message').removeClass('hidden');
+            }
+        });
+    });
+
+    recordsPerPageSelect.addEventListener('change', function() {
+        recordsPerPage = parseInt(this.value);
+        loadRecords(1);
+    });
 
     function loadRecords(page = 1) {
         const limit = document.getElementById('recordsPerPage').value;
@@ -158,7 +194,10 @@ include 'inclu/hd.php';
         $.ajax({
             url: 'fetch_call_records.php',
             type: 'GET',
-            data: { page, limit },
+            data: {
+                page,
+                limit
+            },
             dataType: 'json',
             success: function(data) {
                 const tbody = $('#tableBody');
@@ -188,6 +227,21 @@ include 'inclu/hd.php';
 
                 $('#recordsTable').removeClass('hidden');
                 updatePagination(data, limit);
+
+                $('#select-all-checkbox').prop('checked', false).off('change').on('change', function() {
+                    const checkboxes = $('#tableBody input[type="checkbox"]');
+                    checkboxes.prop('checked', $(this).prop('checked'));
+                });
+
+                selectAllBtn.addEventListener('click', () => {
+                    const checkboxes = $('#tableBody input[type="checkbox"]');
+                    const allChecked = checkboxes.length && checkboxes.not(':checked').length === 0;
+                    checkboxes.prop('checked', !allChecked);
+                    $('#select-all-checkbox').prop('checked', !allChecked);
+                });
+
+                prevBtn.off('click').on('click', () => loadRecords(data.currentPage - 1));
+                nextBtn.off('click').on('click', () => loadRecords(data.currentPage + 1));
             },
             error: function() {
                 $('#tableBody').html(`<tr><td colspan="5" class="text-center p-4 text-red-500">Failed to load data.</td></tr>`);
@@ -199,9 +253,6 @@ include 'inclu/hd.php';
         const paginationInfo = $('#pagination-info');
         paginationInfo.text(`Page ${data.currentPage} of ${data.totalPages}`);
 
-        const prevBtn = $('#prev-btn');
-        const nextBtn = $('#next-btn');
-
         const isPrevDisabled = data.currentPage === 1;
         const isNextDisabled = data.currentPage === data.totalPages;
 
@@ -212,9 +263,6 @@ include 'inclu/hd.php';
         nextBtn.prop('disabled', isNextDisabled)
             .toggleClass('cursor-not-allowed opacity-50', isNextDisabled)
             .toggleClass('cursor-pointer opacity-100', !isNextDisabled);
-
-        prevBtn.off('click').on('click', () => loadRecords(data.currentPage - 1));
-        nextBtn.off('click').on('click', () => loadRecords(data.currentPage + 1));
     }
 
     function formatNumber(num) {
@@ -228,7 +276,7 @@ include 'inclu/hd.php';
         makeTwilioCall(finalNumber, id);
     }
 
-    function makeTwilioCall(number, recordId) {
+    function makeTwilioCall(number, id) {
         if (!device || device.status() !== 'ready') {
             alert('Twilio Client not ready');
             return;
@@ -237,6 +285,8 @@ include 'inclu/hd.php';
         $('#mobileNumberDisplay').text(number);
         $('#mobileCallUI').removeClass('hidden');
 
+        console.log('Calling:', number, 'with ID:', id); // Debug
+
         const connection = device.connect({ To: number });
         currentConnection = connection;
 
@@ -244,16 +294,18 @@ include 'inclu/hd.php';
             currentConnection = null;
             $('#mobileCallUI').addClass('hidden');
 
+            // Update call status
             $.ajax({
                 url: 'update_call_status.php',
                 type: 'POST',
-                data: { id: recordId },
+                data: { id: id },
                 success: function(response) {
                     console.log('Status updated:', response);
+                    loadRecords(1);
                 },
-                error: function(xhr, status, err) {
-                    console.error('Failed to update call status');
-                    console.log('Response:', xhr.responseText);
+                error: function(xhr) {
+                    console.error('Failed to update call status:', xhr.responseText);
+                    loadRecords(1);
                 }
             });
 
@@ -275,7 +327,9 @@ include 'inclu/hd.php';
             type: 'GET',
             dataType: 'json',
             success: function(data) {
-                device = new Twilio.Device(data.token, { debug: true });
+                device = new Twilio.Device(data.token, {
+                    debug: true
+                });
 
                 device.on('ready', () => console.log('Twilio Device Ready'));
                 device.on('error', error => alert('Twilio error: ' + error.message));
@@ -295,7 +349,7 @@ include 'inclu/hd.php';
         $('#mobileCallUI').addClass('hidden');
     }
 
-    // Bulk call
+    // Bulk Call Logic
     document.getElementById('startBulkCallBtn').addEventListener('click', () => {
         const selectedCheckboxes = $('#tableBody input[type="checkbox"]:checked');
 
@@ -309,7 +363,7 @@ include 'inclu/hd.php';
             const row = $(this).closest('tr');
             const phoneNumber = row.find('td:nth-child(2)').text().trim();
             const id = row.data('id');
-            bulkNumbers.push({ phone: phoneNumber, id });
+            bulkNumbers.push({ phoneNumber, id });
         });
 
         bulkCallIndex = 0;
@@ -322,9 +376,9 @@ include 'inclu/hd.php';
             return;
         }
 
-        const { phone, id } = bulkNumbers[bulkCallIndex];
-        const finalNumber = formatNumber(phone);
-        makeTwilioCall(finalNumber, id);
+        const { phoneNumber, id } = bulkNumbers[bulkCallIndex];
+        const formattedNumber = formatNumber(phoneNumber);
+        makeTwilioCall(formattedNumber, id);
     }
 </script>
 

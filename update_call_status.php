@@ -11,8 +11,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    $stmt = $conn->prepare("UPDATE call_schudle SET status = 'Completed' WHERE id = ?");
-    $stmt->bind_param("i", $id);
+    $dt = date('Y-m-d H:i:s');
+    $stmt = $conn->prepare("UPDATE call_schudle SET status = 'Completed', last_updated_date = ? WHERE id = ?");
+    $stmt->bind_param("si", $dt, $id);
 
     if ($stmt->execute()) {
         echo json_encode(['success' => true, 'id' => $id]);
@@ -26,4 +27,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     http_response_code(405);
     echo json_encode(['error' => 'Invalid request method']);
 }
-?>
