@@ -1,27 +1,23 @@
 <?php
 
-require __DIR__ . "/Third-party/vendor/autoload.php";   
+require __DIR__ . "/Third-party/vendor/autoload.php";
 
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
 require 'inclu/config.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
     if (isset($_FILES['fileInput']) && $_FILES['fileInput']['error'] === UPLOAD_ERR_OK) {
         $file = $_FILES['fileInput'];
-
         $uploadDir = 'uploads/';
         $uploadPath = $uploadDir . basename($file['name']);
 
         if (move_uploaded_file($file['tmp_name'], $uploadPath)) {
-
             try {
                 $spreadsheet = IOFactory::load($uploadPath);
                 $sheet = $spreadsheet->getActiveSheet();
 
-                $rows = []; // ✅ Properly initialize the array
-
+                $rows = [];
                 foreach ($sheet->getRowIterator(2) as $row) {
                     $cellIterator = $row->getCellIterator();
                     $cellIterator->setIterateOnlyExistingCells(false);
@@ -39,14 +35,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
                 }
 
-                foreach ($rows as $r) {
-                    $stmt = $conn->prepare("INSERT INTO call_schudle (phno, lab_name, entry_date) VALUES (?, ?, ?)");
-                    $dt = date('Y-m-d H:i:sa');
-                    $stmt->bind_param('sss', $r['phone'], $r['company'], $dt);
-                    $stmt->execute();
+                $dt = date('Y-m-d H:i:s');
+                $status = 'Pending';
+
+                $stmt = $conn->prepare("INSERT INTO call_schudle (phno, lab_name, entry_date, status) VALUES (?, ?, ?, ?)");
+
+                if ($stmt) {
+                    foreach ($rows as $r) {
+                        $phno = $r['phone'];
+                        $labName = $r['company'];
+
+                        $stmt->bind_param('ssss', $phno, $labName, $dt, $status);
+                        $stmt->execute();
+                    }
+                    $stmt->close();
+                } else {
+                    echo 'Database error: ' . $conn->error;
+                    unlink($uploadPath);
+                    exit;
                 }
 
-                // ✅ Attempt to delete the uploaded file
                 if (unlink($uploadPath)) {
                     echo 'File processed and deleted successfully!';
                 } else {
@@ -54,14 +62,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             } catch (Exception $e) {
                 echo 'Error reading the Excel file: ' . $e->getMessage();
-                unlink($uploadPath);
+                if (file_exists($uploadPath)) {
+                    unlink($uploadPath);
+                }
             }
         } else {
             echo 'Error moving the uploaded file.';
-            unlink($uploadPath);
         }
     } else {
         echo 'No file uploaded or there was an upload error.';
-        unlink($uploadPath);
     }
 }

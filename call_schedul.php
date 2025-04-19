@@ -82,12 +82,8 @@ include 'inclu/hd.php';
                 <button id="selectAllBtn" class="text-gray-700 font-semibold bg-white border border-gray-300 rounded-lg px-4 py-2 hover:bg-gray-100">
                     Select All
                 </button>
-                <button class="text-green-700 font-semibold bg-white border border-gray-300 rounded-lg px-4 py-2 hover:bg-green-100">
+                <button id="startBulkCallBtn" class="text-green-700 font-semibold bg-white border border-gray-300 rounded-lg px-4 py-2 hover:bg-green-100">
                     Call Start
-                </button>
-
-                <button class="text-red-700 font-semibold bg-white border border-gray-300 rounded-lg px-4 py-2 hover:bg-red-100">
-                    Call End
                 </button>
             </div>
             <div class="text-sm text-gray-500">
@@ -145,22 +141,26 @@ include 'inclu/hd.php';
 <script>
     let device;
     let currentConnection = null;
-    let currentPage = 1; // Track the current page number
+    let currentPage = 1;
+    let bulkNumbers = [];
+    let bulkCallIndex = 0;
 
     const fileInput = document.getElementById('fileInput');
     const successMessage = document.getElementById('success-message');
     const errorMessage = document.getElementById('error-message');
 
-    const selectAllCheckbox = document.getElementById('select-all-checkbox');
     const selectAllBtn = document.getElementById('selectAllBtn');
     const prevBtn = $('#prev-btn');
     const nextBtn = $('#next-btn');
+    const recordsPerPageSelect = document.getElementById('recordsPerPage');
+    let recordsPerPage = parseInt(recordsPerPageSelect.value);
 
     window.onload = () => {
         setupTwilioClient();
         loadRecords(currentPage);
     };
 
+    // Upload file
     fileInput.addEventListener('change', () => {
         const formData = new FormData();
         formData.append('fileInput', fileInput.files[0]);
@@ -172,45 +172,34 @@ include 'inclu/hd.php';
             processData: false,
             contentType: false,
             success: function(data) {
-                console.log('File uploaded successfully: ', data);
-
-                successMessage.textContent = data;
-                successMessage.classList.remove('hidden');
-
                 const fileName = fileInput.files[0].name;
-                $('#success-message').text(`File "${fileName}" uploaded successfully`);
+                $('#success-message').text(`File "${fileName}" uploaded successfully`).removeClass('hidden');
+                $('#error-message').addClass('hidden');
                 loadRecords(1);
             },
-            error: function(xhr, status, error) {
-                console.error('Upload error:', error);
-                errorMessage.classList.remove('hidden');
+            error: function() {
+                $('#error-message').removeClass('hidden');
             }
         });
     });
 
-    const recordsPerPageSelect = document.getElementById('records-per-page');
-    let recordsPerPage = parseInt(recordsPerPageSelect.value); // Default to 10 records per page
-
     recordsPerPageSelect.addEventListener('change', function() {
-        recordsPerPage = parseInt(this.value); // Get the selected value
-        loadRecords(1); // Reload records with the new page number and limit
+        recordsPerPage = parseInt(this.value);
+        loadRecords(1);
     });
 
-    // Function to load records with the selected limit
     function loadRecords(page = 1) {
-        const limit = document.getElementById('recordsPerPage').value; // Get the selected limit
+        const limit = document.getElementById('recordsPerPage').value;
 
         $.ajax({
             url: 'fetch_call_records.php',
             type: 'GET',
             data: {
-                page: page,
-                limit: limit // Pass the limit to the server
+                page,
+                limit
             },
             dataType: 'json',
             success: function(data) {
-                console.log('Fetched records:', data);
-
                 const tbody = $('#tableBody');
                 tbody.html('');
 
@@ -221,86 +210,66 @@ include 'inclu/hd.php';
 
                 data.records.forEach(row => {
                     tbody.append(`
-                <tr>
-                    <td class="border px-4 py-2">
-                        <input type="checkbox" class="form-checkbox text-blue-600" />
-                    </td>
-                    <td class="border px-4 py-2">${row.phno}</td>
-                    <td class="border px-4 py-2">${row.lab_name}</td>
-                    <td class="border px-4 py-2">${row.status || 'Pending'}</td>
-                    <td class="border px-4 py-2 text-center">
-                        <button class="text-indigo-600 hover:text-indigo-900" onclick="callNow('${row.phno}')">
-                            <i class="fas fa-phone"></i>
-                        </button>
-                    </td>
-                </tr>`);
+                        <tr>
+                            <td class="border px-4 py-2">
+                                <input type="checkbox" class="form-checkbox text-blue-600" />
+                            </td>
+                            <td class="border px-4 py-2">${row.phno}</td>
+                            <td class="border px-4 py-2">${row.lab_name}</td>
+                            <td class="border px-4 py-2">${row.status || 'Pending'}</td>
+                            <td class="border px-4 py-2 text-center">
+                                <button class="text-indigo-600 hover:text-indigo-900" onclick="callNow('${row.phno}')">
+                                    <i class="fas fa-phone"></i>
+                                </button>
+                            </td>
+                        </tr>`);
                 });
 
                 $('#recordsTable').removeClass('hidden');
                 updatePagination(data, limit);
 
-                // Handle pagination buttons
-                prevBtn.off('click').on('click', () => loadRecords(data.currentPage - 1));
-                nextBtn.off('click').on('click', () => loadRecords(data.currentPage + 1));
-
-                // Select All checkbox event
-                $('#select-all-checkbox').change(function() {
-                    const isChecked = $(this).prop('checked');
+                $('#select-all-checkbox').prop('checked', false).off('change').on('change', function() {
                     const checkboxes = $('#tableBody input[type="checkbox"]');
-                    checkboxes.prop('checked', isChecked);
+                    checkboxes.prop('checked', $(this).prop('checked'));
                 });
 
                 selectAllBtn.addEventListener('click', () => {
                     const checkboxes = $('#tableBody input[type="checkbox"]');
-                    const isChecked = checkboxes.length && checkboxes.not(':checked').length === 0;
-
-                    // If all checkboxes are already selected, unselect them; otherwise, select them all
-                    checkboxes.prop('checked', !isChecked);
-                    $('#select-all-checkbox').prop('checked', !isChecked); // Update the select-all header checkbox
+                    const allChecked = checkboxes.length && checkboxes.not(':checked').length === 0;
+                    checkboxes.prop('checked', !allChecked);
+                    $('#select-all-checkbox').prop('checked', !allChecked);
                 });
+
+                prevBtn.off('click').on('click', () => loadRecords(data.currentPage - 1));
+                nextBtn.off('click').on('click', () => loadRecords(data.currentPage + 1));
             },
-            error: function(xhr, status, error) {
-                console.error('Fetch error:', error);
+            error: function() {
                 $('#tableBody').html(`<tr><td colspan="5" class="text-center p-4 text-red-500">Failed to load data.</td></tr>`);
             }
         });
     }
 
-    // Update pagination information and disable buttons accordingly
     function updatePagination(data, limit) {
         const paginationInfo = $('#pagination-info');
-        paginationInfo.html(`Showing ${data.records.length} of ${data.totalCount} records`);
+        paginationInfo.text(`Page ${data.currentPage} of ${data.totalPages}`);
 
-        const prevBtn = $('#prev-btn');
-        const nextBtn = $('#next-btn');
-
-        // Disable Previous button if on the first page
         const isPrevDisabled = data.currentPage === 1;
-        prevBtn.prop('disabled', isPrevDisabled);
-        prevBtn.toggleClass('cursor-not-allowed opacity-50', isPrevDisabled);
-        prevBtn.toggleClass('cursor-pointer opacity-100', !isPrevDisabled);
-
-        // Disable Next button if on the last page
         const isNextDisabled = data.currentPage === data.totalPages;
-        nextBtn.prop('disabled', isNextDisabled);
-        nextBtn.toggleClass('cursor-not-allowed opacity-50', isNextDisabled);
-        nextBtn.toggleClass('cursor-pointer opacity-100', !isNextDisabled);
 
-        // Prevent click action when Previous button is disabled
-        prevBtn.off('click');
-        if (!isPrevDisabled) {
-            prevBtn.on('click', () => loadRecords(data.currentPage - 1)); // Enable action if not disabled
-        }
+        prevBtn.prop('disabled', isPrevDisabled)
+            .toggleClass('cursor-not-allowed opacity-50', isPrevDisabled)
+            .toggleClass('cursor-pointer opacity-100', !isPrevDisabled);
 
-        // Prevent click action when Next button is disabled
-        nextBtn.off('click');
-        if (!isNextDisabled) {
-            nextBtn.on('click', () => loadRecords(data.currentPage + 1)); // Enable action if not disabled
-        }
+        nextBtn.prop('disabled', isNextDisabled)
+            .toggleClass('cursor-not-allowed opacity-50', isNextDisabled)
+            .toggleClass('cursor-pointer opacity-100', !isNextDisabled);
+    }
 
-        // Update pagination text to show current page
-        const paginationText = `Page ${data.currentPage} of ${data.totalPages}`;
-        $('#pagination-info').text(paginationText);
+    // ============== Calling Section ==============
+    function formatNumber(num) {
+        let formatted = num.replace(/\s+/g, '');
+        if (!formatted.startsWith('+')) formatted = '+' + formatted;
+        return formatted;
     }
 
     function callNow(number) {
@@ -310,21 +279,34 @@ include 'inclu/hd.php';
 
     function makeTwilioCall(number) {
         if (!device || device.status() !== 'ready') {
-            return alert('Twilio Client not ready');
+            alert('Twilio Client not ready');
+            return;
         }
-        device.connect({
+
+        $('#mobileNumberDisplay').text(number); // ✅ Show number on UI
+        $('#mobileCallUI').removeClass('hidden'); // ✅ Show the call UI
+
+        const connection = device.connect({
             To: number
         });
-        document.getElementById('mobileNumberDisplay').textContent = number;
-        document.getElementById('mobileCallUI').classList.remove('hidden');
-    }
+        currentConnection = connection;
 
-    function formatNumber(num) {
-        let formatted = num.replace(/\s+/g, '');
-        if (!formatted.startsWith('+')) {
-            formatted = '+' + formatted;
-        }
-        return formatted;
+        connection.on('disconnect', () => {
+            currentConnection = null;
+            $('#mobileCallUI').addClass('hidden'); // ✅ Hide UI after disconnect
+
+            if (bulkNumbers.length > 0 && bulkCallIndex < bulkNumbers.length - 1) {
+                bulkCallIndex++;
+
+                // ✅ Wait 2-3 seconds before next call
+                setTimeout(() => {
+                    startNextCall();
+                }, 2500); // Adjust the delay (in milliseconds) here
+            } else {
+                bulkNumbers = [];
+                bulkCallIndex = 0;
+            }
+        });
     }
 
     function setupTwilioClient() {
@@ -339,22 +321,9 @@ include 'inclu/hd.php';
 
                 device.on('ready', () => console.log('Twilio Device Ready'));
                 device.on('error', error => alert('Twilio error: ' + error.message));
-                device.on('connect', conn => {
-                    currentConnection = conn;
-                    $('#mobileCallUI').removeClass('hidden');
-                });
-                device.on('disconnect', () => {
-                    currentConnection = null;
-                    $('#mobileCallUI').addClass('hidden');
-                });
-                device.on('incoming', connection => {
-                    currentConnection = connection;
-                    $('#mobileNumberDisplay').text(connection.parameters.From);
-                    $('#mobileCallUI').removeClass('hidden');
-                });
+                device.on('disconnect', () => $('#mobileCallUI').addClass('hidden'));
             },
-            error: function(xhr, status, error) {
-                console.error('Twilio token error:', error);
+            error: function() {
                 alert('Could not connect to Twilio');
             }
         });
@@ -367,8 +336,37 @@ include 'inclu/hd.php';
         }
         $('#mobileCallUI').addClass('hidden');
     }
-</script>
 
+    // ============== Bulk Call Logic ==============
+    document.getElementById('startBulkCallBtn').addEventListener('click', () => {
+        const selectedCheckboxes = $('#tableBody input[type="checkbox"]:checked');
+
+        if (selectedCheckboxes.length === 0) {
+            alert("Please select at least one number to call.");
+            return;
+        }
+
+        bulkNumbers = [];
+        selectedCheckboxes.each(function() {
+            const row = $(this).closest('tr');
+            const phoneNumber = row.find('td:nth-child(2)').text().trim();
+            bulkNumbers.push(phoneNumber);
+        });
+
+        bulkCallIndex = 0;
+        startNextCall();
+    });
+
+    function startNextCall() {
+        if (bulkCallIndex >= bulkNumbers.length) {
+            alert("All calls completed.");
+            return;
+        }
+
+        const currentNumber = formatNumber(bulkNumbers[bulkCallIndex]);
+        makeTwilioCall(currentNumber);
+    }
+</script>
 
 
 <?php

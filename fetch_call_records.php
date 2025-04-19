@@ -7,7 +7,7 @@ $limit = isset($_GET['limit']) ? intval($_GET['limit']) : 10;  // Default limit 
 $offset = ($page - 1) * $limit;  // Calculate the offset for SQL query
 
 // Get the total count of records
-$result = $conn->query("SELECT COUNT(*) as total FROM call_schudle");
+$result = $conn->query("SELECT COUNT(*) as total FROM call_schudle where status !='Compeleted'");
 if (!$result) {
     // Handle query failure
     echo json_encode([
@@ -20,7 +20,7 @@ $totalRows = $result->fetch_assoc()['total'];  // Total number of records
 $totalPages = ceil($totalRows / $limit);  // Calculate total number of pages
 
 // Query to fetch the records for the current page
-$stmt = $conn->prepare("SELECT id, phno, lab_name, status FROM call_schudle ORDER BY id ASC LIMIT ? OFFSET ?");
+$stmt = $conn->prepare("SELECT id, phno, lab_name, status FROM call_schudle where status !='Compeleted' ORDER BY id ASC LIMIT ? OFFSET ?");
 if ($stmt === false) {
     // Handle prepare statement failure
     echo json_encode([
