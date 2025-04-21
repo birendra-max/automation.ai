@@ -26,7 +26,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 'login_id' => $uniqueId,
                 "first_name" => $user['first_name'],
                 'last_name' => $user['last_name'],
-                'role' => $user['role']
+                'role' => $user['role'],
+                'user_access' => $user['user_access']
             );
 
             // Update the user's active status and last login time
@@ -53,6 +54,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     const userDetails = " . json_encode($_SESSION['user_details']) . ";
                     localStorage.setItem('userDetails', JSON.stringify(userDetails));
                     window.location.href = 'dashboard.php'; // Redirect to the dashboard
+                </script>";
+                } else if ($_SESSION['user_details']['role'] == 'user' && $_SESSION['user_details']['user_access'] == 'call_schudle') {
+                    echo "<script>
+                    const userDetails = " . json_encode($_SESSION['user_details']) . ";
+                    localStorage.setItem('userDetails', JSON.stringify(userDetails));
+                    window.location.href = 'calling.php'; // Redirect to the dashboard
                 </script>";
                 } else {
                     echo "<script>

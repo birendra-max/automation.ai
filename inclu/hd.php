@@ -51,7 +51,7 @@
                     <?php
 
                     if (isset($_SESSION['user_details'])) {
-                        if ($_SESSION['user_details']['role'] == 'admin') {
+                        if ($_SESSION['user_details']['role'] == 'admin' && $_SESSION['user_details']['user_access'] == 'all') {
                             // Admin menu options
                     ?>
                             <a href="dashboard.php" class="flex items-center px-4 py-2 text-gray-100 hover:bg-gray-700" id="dashboard">
@@ -91,14 +91,21 @@
                             </a>
 
                         <?php
-                        } elseif ($_SESSION['user_details']['role'] == 'user') {
+                        } elseif ($_SESSION['user_details']['role'] == 'user' && $_SESSION['user_details']['user_access'] == 'call_schudle') {
                             // User menu options
                         ?>
-                            <a href="mailai.php" class="flex items-center px-4 py-2 text-gray-100 hover:bg-gray-700" id="mailai">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.5 5L18 8M21 12V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-6" />
+                            <a href="calling.php" class="flex items-center px-4 py-2 text-gray-100 hover:bg-gray-700" id="calling">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="h-4 w-4 mr-2" fill="white">
+                                    <path d="M280 0C408.1 0 512 103.9 512 232c0 13.3-10.7 24-24 24s-24-10.7-24-24c0-101.6-82.4-184-184-184c-13.3 0-24-10.7-24-24s10.7-24 24-24zm8 192a32 32 0 1 1 0 64 32 32 0 1 1 0-64zm-32-72c0-13.3 10.7-24 24-24c75.1 0 136 60.9 136 136c0 13.3-10.7 24-24 24s-24-10.7-24-24c0-48.6-39.4-88-88-88c-13.3 0-24-10.7-24-24zM117.5 1.4c19.4-5.3 39.7 4.6 47.4 23.2l40 96c6.8 16.3 2.1 35.2-11.6 46.3L144 207.3c33.3 70.4 90.3 127.4 160.7 160.7L345 318.7c11.2-13.7 30-18.4 46.3-11.6l96 40c18.6 7.7 28.5 28 23.2 47.4l-24 88C481.8 499.9 466 512 448 512C200.6 512 0 311.4 0 64C0 46 12.1 30.2 29.5 25.4l88-24z" />
                                 </svg>
-                                Mail Automation | AI
+                                Auto Calling
+                            </a>
+
+                            <a href="call_schedul.php" class="flex items-center px-4 py-2 text-gray-100 hover:bg-gray-700" id="call_schudle">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="h-4 w-4 mr-2" fill="white">
+                                    <path d="M280 0C408.1 0 512 103.9 512 232c0 13.3-10.7 24-24 24s-24-10.7-24-24c0-101.6-82.4-184-184-184c-13.3 0-24-10.7-24-24s10.7-24 24-24zm8 192a32 32 0 1 1 0 64 32 32 0 1 1 0-64zm-32-72c0-13.3 10.7-24 24-24c75.1 0 136 60.9 136 136c0 13.3-10.7 24-24 24s-24-10.7-24-24c0-48.6-39.4-88-88-88c-13.3 0-24-10.7-24-24zM117.5 1.4c19.4-5.3 39.7 4.6 47.4 23.2l40 96c6.8 16.3 2.1 35.2-11.6 46.3L144 207.3c33.3 70.4 90.3 127.4 160.7 160.7L345 318.7c11.2-13.7 30-18.4 46.3-11.6l96 40c18.6 7.7 28.5 28 23.2 47.4l-24 88C481.8 499.9 466 512 448 512C200.6 512 0 311.4 0 64C0 46 12.1 30.2 29.5 25.4l88-24z" />
+                                </svg>
+                                Call Schedule
                             </a>
                     <?php
                         }
