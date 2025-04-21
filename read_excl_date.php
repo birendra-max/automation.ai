@@ -42,12 +42,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 if ($stmt) {
                     foreach ($rows as $r) {
-                        $phno = $r['phone'];
+                        $rawPhno = $r['phone'];
                         $labName = $r['company'];
+                        $plusPos = strpos($rawPhno, '+');
+                        if ($plusPos !== false) {
+                            $phno = substr($rawPhno, $plusPos);
+                        } else {
+                            $phno = $rawPhno;
+                        }
 
                         $stmt->bind_param('ssss', $phno, $labName, $dt, $status);
                         $stmt->execute();
                     }
+
                     $stmt->close();
                 } else {
                     echo 'Database error: ' . $conn->error;
