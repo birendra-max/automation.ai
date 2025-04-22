@@ -43,9 +43,12 @@ include 'inclu/hd.php';
                     </svg>
                 </button>
 
-                <button id="messageBox" class="w-14 h-14 rounded-full bg-green-600 flex items-center justify-center hover:bg-green-700 transition duration-300 shadow-md" title="Open Message Box">
+                <!-- Dialer Button -->
+                <button id="openDialer"
+                    class="w-14 h-14 rounded-full bg-purple-600 flex items-center justify-center hover:bg-purple-700 transition duration-300 shadow-md"
+                    title="Open Dial Pad">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" viewBox="0 0 20 20" fill="currentColor">
-                        <path d="M2 5a2 2 0 012-2h12a2 2 0 012 2v7a2 2 0 01-2 2H6l-4 4V5z" />
+                        <path d="M4 3h2v2H4V3zm5 0h2v2H9V3zm5 0h2v2h-2V3zM4 8h2v2H4V8zm5 0h2v2H9V8zm5 0h2v2h-2V8zM4 13h2v2H4v-2zm5 0h2v2H9v-2zm5 0h2v2h-2v-2z" />
                     </svg>
                 </button>
             </div>
@@ -57,8 +60,71 @@ include 'inclu/hd.php';
                     </svg>
                 </button>
             </div>
+
+            <!-- Dial Pad Modal -->
+            <div id="dialPad"
+                class="absolute top-0 left-0 w-full h-full bg-black bg-opacity-80 flex items-center justify-center hidden z-50">
+                <div class="bg-[#2a2a2a] text-white p-6 rounded-xl shadow-xl w-64">
+                    <div id="dialedNumber" class="text-2xl text-center mb-4 border-b border-gray-500 pb-2"></div>
+                    <div class="grid grid-cols-3 gap-4 text-center text-lg">
+                        <button class="dial-btn py-3 bg-gray-700 rounded-lg hover:bg-gray-600 transition">1</button>
+                        <button class="dial-btn py-3 bg-gray-700 rounded-lg hover:bg-gray-600 transition">2</button>
+                        <button class="dial-btn py-3 bg-gray-700 rounded-lg hover:bg-gray-600 transition">3</button>
+                        <button class="dial-btn py-3 bg-gray-700 rounded-lg hover:bg-gray-600 transition">4</button>
+                        <button class="dial-btn py-3 bg-gray-700 rounded-lg hover:bg-gray-600 transition">5</button>
+                        <button class="dial-btn py-3 bg-gray-700 rounded-lg hover:bg-gray-600 transition">6</button>
+                        <button class="dial-btn py-3 bg-gray-700 rounded-lg hover:bg-gray-600 transition">7</button>
+                        <button class="dial-btn py-3 bg-gray-700 rounded-lg hover:bg-gray-600 transition">8</button>
+                        <button class="dial-btn py-3 bg-gray-700 rounded-lg hover:bg-gray-600 transition">9</button>
+                        <button class="dial-btn py-3 bg-gray-700 rounded-lg hover:bg-gray-600 transition">*</button>
+                        <button class="dial-btn py-3 bg-gray-700 rounded-lg hover:bg-gray-600 transition">0</button>
+                        <button class="dial-btn py-3 bg-gray-700 rounded-lg hover:bg-gray-600 transition">#</button>
+                    </div>
+                    <div class="mt-4 flex justify-between">
+                        <button id="dialClear" class="bg-red-600 px-4 py-2 rounded hover:bg-red-700">Clear</button>
+                        <button id="dialClose" class="bg-teal-600 px-4 py-2 rounded hover:bg-teal-700">Done</button>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
+
+
+    <script>
+        const openDialerBtn = document.getElementById("openDialer");
+        const dialPad = document.getElementById("dialPad");
+        const dialClose = document.getElementById("dialClose");
+        const dialClear = document.getElementById("dialClear");
+        const dialedNumberDisplay = document.getElementById("dialedNumber");
+        const mobileNumberDisplay = document.getElementById("mobileNumberDisplay");
+
+        openDialerBtn.addEventListener("click", () => {
+            dialPad.classList.remove("hidden");
+        });
+
+
+        dialClose.addEventListener("click", () => {
+            dialPad.classList.add("hidden");
+
+            const dialed = dialedNumberDisplay.textContent.trim();
+            if (dialed.length > 0) {
+                mobileNumberDisplay.textContent = dialed;
+            }
+        });
+
+
+        dialClear.addEventListener("click", () => {
+            dialedNumberDisplay.textContent = "";
+        });
+
+        document.querySelectorAll(".dial-btn").forEach(button => {
+            button.addEventListener("click", () => {
+                dialedNumberDisplay.textContent += button.textContent;
+            });
+        });
+    </script>
+
 
     <!-- File Upload Section -->
     <div class="w-full">
@@ -286,7 +352,9 @@ include 'inclu/hd.php';
 
         console.log('Calling:', number, 'with ID:', id); // Debug
 
-        const connection = device.connect({ To: number });
+        const connection = device.connect({
+            To: number
+        });
         currentConnection = connection;
 
         connection.on('disconnect', () => {
@@ -297,7 +365,9 @@ include 'inclu/hd.php';
             $.ajax({
                 url: 'update_call_status.php',
                 type: 'POST',
-                data: { id: id },
+                data: {
+                    id: id
+                },
                 success: function(response) {
                     console.log('Status updated:', response);
                     loadRecords(1);
@@ -362,7 +432,10 @@ include 'inclu/hd.php';
             const row = $(this).closest('tr');
             const phoneNumber = row.find('td:nth-child(2)').text().trim();
             const id = row.data('id');
-            bulkNumbers.push({ phoneNumber, id });
+            bulkNumbers.push({
+                phoneNumber,
+                id
+            });
         });
 
         bulkCallIndex = 0;
@@ -375,7 +448,10 @@ include 'inclu/hd.php';
             return;
         }
 
-        const { phoneNumber, id } = bulkNumbers[bulkCallIndex];
+        const {
+            phoneNumber,
+            id
+        } = bulkNumbers[bulkCallIndex];
         const formattedNumber = formatNumber(phoneNumber);
         makeTwilioCall(formattedNumber, id);
     }
