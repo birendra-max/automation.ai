@@ -410,7 +410,7 @@ include 'inclu/hd.php';
                 bulkCallIndex++;
                 setTimeout(() => {
                     startNextCall();
-                }, 2500);
+                }, 1000);
             } else {
                 bulkNumbers = [];
                 bulkCallIndex = 0;
