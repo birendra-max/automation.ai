@@ -64,7 +64,7 @@ include 'inclu/hd.php';
             <!-- Dial Pad Modal -->
             <div id="dialPad"
                 class="absolute top-0 left-0 w-full h-full bg-black bg-opacity-80 flex items-center justify-center hidden z-50">
-                <!-- <div class="bg-[#2a2a2a] text-white p-6 rounded-xl shadow-xl w-64">
+                <div class="bg-[#2a2a2a] text-white p-6 rounded-xl shadow-xl w-64">
                     <div id="dialedNumber" class="text-2xl text-center mb-4 border-b border-gray-500 pb-2"></div>
                     <div class="grid grid-cols-3 gap-4 text-center text-lg">
                         <button class="dial-btn py-3 bg-gray-700 rounded-lg hover:bg-gray-600 transition">1</button>
@@ -84,35 +84,7 @@ include 'inclu/hd.php';
                         <button id="dialClear" class="bg-red-600 px-4 py-2 rounded hover:bg-red-700">Clear</button>
                         <button id="dialClose" class="bg-teal-600 px-4 py-2 rounded hover:bg-teal-700">Done</button>
                     </div>
-                </div> -->
-
-
-                <div class="dtmf-call-ui max-w-sm mx-auto p-4 bg-white rounded-2xl shadow-xl">
-                    <div class="text-center mb-4">
-                        <input type="text" id="displayNumber" readonly class="w-full text-center text-xl py-2 border rounded" placeholder="Enter number" />
-                    </div>
-
-                    <div class="grid grid-cols-3 gap-4 dial-pad text-xl font-semibold">
-                        <button class="btn bg-gray-200 p-4 rounded">1</button>
-                        <button class="btn bg-gray-200 p-4 rounded">2</button>
-                        <button class="btn bg-gray-200 p-4 rounded">3</button>
-                        <button class="btn bg-gray-200 p-4 rounded">4</button>
-                        <button class="btn bg-gray-200 p-4 rounded">5</button>
-                        <button class="btn bg-gray-200 p-4 rounded">6</button>
-                        <button class="btn bg-gray-200 p-4 rounded">7</button>
-                        <button class="btn bg-gray-200 p-4 rounded">8</button>
-                        <button class="btn bg-gray-200 p-4 rounded">9</button>
-                        <button class="btn bg-gray-200 p-4 rounded">*</button>
-                        <button class="btn bg-gray-200 p-4 rounded">0</button>
-                        <button class="btn bg-gray-200 p-4 rounded">#</button>
-                    </div>
-
-                    <div class="flex justify-around mt-6">
-                        <button id="callBtn" class="bg-green-500 text-white px-6 py-2 rounded-full shadow">Call</button>
-                        <button id="hangupBtn" class="bg-red-500 text-white px-6 py-2 rounded-full shadow hidden">Hang Up</button>
-                    </div>
                 </div>
-
             </div>
 
         </div>
@@ -131,7 +103,6 @@ include 'inclu/hd.php';
             dialPad.classList.remove("hidden");
         });
 
-
         dialClose.addEventListener("click", () => {
             dialPad.classList.add("hidden");
 
@@ -141,17 +112,33 @@ include 'inclu/hd.php';
             }
         });
 
-
         dialClear.addEventListener("click", () => {
             dialedNumberDisplay.textContent = "";
         });
 
         document.querySelectorAll(".dial-btn").forEach(button => {
             button.addEventListener("click", () => {
-                dialedNumberDisplay.textContent += button.textContent;
+                const digit = button.textContent.trim();
+
+                // Update the display with the clicked digit
+                dialedNumberDisplay.textContent += digit;
+
+                // Send DTMF digit
+                sendDTMF(digit);
             });
         });
+
+        // Function to send DTMF digits during a call
+        function sendDTMF(digit) {
+            if (currentConnection && currentConnection.sendDigits) {
+                currentConnection.sendDigits(digit); // Sends the DTMF digit to the active call
+                console.log('Sent DTMF digit:', digit);
+            } else {
+                console.warn('No active connection or sendDigits method not available.');
+            }
+        }
     </script>
+
 
 
     <!-- File Upload Section -->
