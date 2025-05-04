@@ -84,13 +84,14 @@ include 'inclu/config.php'
                     <!-- History Item 1 -->
                     <div class="bg-white p-4 rounded-xl shadow-lg mb-6 transition-all hover:scale-105 hover:shadow-2xl flex items-center justify-between">
                         <div>
-                            <p class="font-semibold text-lg text-gray-800">+1234567890</p>
-                            <p class="text-sm text-gray-600">Duration: 2 mins</p>
-                            <p class="text-sm text-gray-600">Status: Completed</p>
+                            <p class="font-semibold text-lg text-gray-800"><?php echo $r['phone']; ?></p>
+                            <p class="text-sm text-gray-600">Duration: <?php echo $r['call_duration']; ?></p>
+                            <p class="text-sm text-gray-600">Status: <?php echo $r['call_status']; ?></p>
                         </div>
-                        <button class="text-green-500 hover:text-green-600 focus:outline-none">
-                            <i class="fas fa-phone-alt text-2xl"></i> <!-- Font Awesome Phone Icon -->
+                        <button onclick="makeCall('<?php echo $r['phone']; ?>')" class="text-green-500 hover:text-green-600 focus:outline-none">
+                            <i class="fas fa-phone-alt text-2xl"></i>
                         </button>
+
                     </div>
             <?php  }
             } else {
@@ -115,7 +116,7 @@ include 'inclu/config.php'
                             <p class="font-semibold text-lg text-gray-800"><?php echo $r['phone']; ?></p>
                             <p class="text-sm text-gray-600">Saved as: <?php echo $r['name']; ?></p>
                         </div>
-                        <button class="text-green-500 hover:text-green-600 focus:outline-none">
+                        <button onclick="makeCall('<?php echo $r['phone']; ?>')" class="text-green-500 hover:text-green-600 focus:outline-none">
                             <i class="fas fa-phone-alt text-2xl"></i>
                         </button>
                     </div>
@@ -318,6 +319,29 @@ include 'inclu/config.php'
         });
         document.getElementById('mobileNumberDisplay').textContent = finalNumber;
     });
+
+
+    function makeCall(number) {
+        const finalNumber = formatNumber(number);
+
+        if (!finalNumber) {
+            alert("Enter a valid phone number");
+            return;
+        }
+
+        if (!device || device.status() !== 'ready') {
+            alert("Twilio Client not ready");
+            return;
+        }
+
+        device.connect({
+            To: finalNumber
+        });
+        document.getElementById('mobileNumberDisplay').textContent = finalNumber;
+        document.getElementById('mobileCallUI').classList.remove('hidden');
+    }
+
+
 
     // End call
     document.getElementById("closeCallUI").addEventListener("click", () => {
